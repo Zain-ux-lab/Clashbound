@@ -36,8 +36,10 @@ entry, engineering evidence, a demo walkthrough and interview preparation.
 
 ## Team
 
-- **Zain** — gameplay design, combat engine, character balance, bot and API.
-- **Abijeason** — interface, artwork, menus/settings, music and presentation.
+- **Zain** — original concept, gameplay design, interface, tactical bot, character balance, and contributions to combat-engine and API integration.
+- **Abijeason** — core combat engine, artwork, menus/settings, music and presentation.
+
+We both contributed across boundaries; these lines describe each person's main focus.
 
 We review each other's changes through pull requests and share responsibility
 for integration and understanding the code. AI assists development; changes
