@@ -1,7 +1,8 @@
 """Single-player browser sessions using the shared engine and tactical bot."""
 from copy import deepcopy
 from dataclasses import dataclass, field
-from random import sample, choice
+from random import sample, choice, randrange
+from itertools import combinations
 from secrets import token_urlsafe
 from threading import RLock
 from time import monotonic
@@ -27,6 +28,11 @@ SESSION_SECONDS = 1800
 MAX_SESSIONS = 256
 
 
+def draw_initiative():
+    # A fair opening draw, independent of team, stats, mastery and outcome.
+    return randrange(2)
+
+
 @dataclass
 class Match:
     battle: BattleState
@@ -36,6 +42,9 @@ class Match:
     log: list[str] = field(default_factory=lambda: ['Teams revealed. You move first.'])
     touched: float = field(default_factory=monotonic)
     arena_index: int = 0
+    match_id: str = field(default_factory=lambda: token_urlsafe(16))
+    human_actions: int = 0
+    first_player: int = 0
 
 
 # Local demo storage: one process. Use a shared store before running workers.
@@ -122,7 +131,7 @@ def _snapshot(match: Match) -> dict:
             })
         teams.append(team)
     human_actions = legal_actions(state) if (state.replacement_required if state.replacement_required is not None else state.current_player) == 0 else ()
-    return dict(teams=teams, arena=ARENAS[match.arena_index].copy(), active=state.active_indices[:], player=state.current_player,
+    return dict(initiative=dict(firstPlayer=match.first_player,method='Fair 50/50 draw'), matchId=match.match_id, humanActions=match.human_actions, teams=teams, arena=ARENAS[match.arena_index].copy(), active=state.active_indices[:], player=state.current_player,
                 replacement=state.replacement_required, winner=state.winner,
                 turn=match.turn, revision=match.revision, log=match.log[:],
                 actions=[dict(kind=a.kind, index=a.index) for a in human_actions])
@@ -157,6 +166,8 @@ def _advance(match: Match, action: Action) -> dict:
         message = f'{label} deployed {name}' + (' — free replacement.' if action.kind == 'replace' else ' — turn used.')
     if action.kind != 'replace':
         match.turn += 1
+        if player == 0:
+            match.human_actions += 1
     match.log.append(message)
     match.log.extend(match.battle.events)
     if match.battle.winner is not None:
@@ -179,6 +190,8 @@ def roster():
     result = deepcopy(ROSTER)
     for character in result:
         for move in character['moves'] + character['movePool']:
+            if move.get('mechanic') in DESCRIPTIONS:
+                move['description'] = DESCRIPTIONS[move['mechanic']]
             if move.get('effect') == 'status' and move.get('power', 0) > 0:
                 del move['effect']
                 move['appliesStatus'] = move['mechanic']
@@ -207,7 +220,12 @@ def new_battle(data: TeamRequest, request: Request, response: Response):
                 raise HTTPException(503, 'The demo is busy. Please try again shortly.')
             session = token_urlsafe(32)
             response.set_cookie(COOKIE, session, httponly=True, samesite='strict', secure=request.url.scheme == 'https')
-        rosters = [data.roster, sample([c for c in BY_ID if c not in data.roster], 3)]
+        # Uniformly draw a trio, excluding only the previous trio when possible.
+        # No matchup optimisation, stat boosts, sidegrades or deeper search.
+        previous_team = set(_matches[session].rosters[1]) if session in _matches else set()
+        trios = [trio for trio in combinations([c for c in BY_ID if c not in data.roster], 3)
+                 if set(trio) != previous_team]
+        rosters = [data.roster, sample(choice(trios), 3)]
         teams=[]
         for player,ids in enumerate(rosters):
             team=[]
@@ -222,14 +240,23 @@ def new_battle(data: TeamRequest, request: Request, response: Response):
                 team.append(Creature(info['name'],info['maxHp'],stats['power'],stats['armour'],moves,
                                      battle_type=info['type'],focus=stats['focus'],ward=stats['ward'],recovery=stats['recovery']))
             teams.append(team)
-        match = Match(BattleState(*teams), rosters)
+        first_player = draw_initiative()
+        match = Match(BattleState(*teams, current_player=first_player), rosters, first_player=first_player)
+        match.log = ['Initiative draw: ' + ('you open.' if first_player == 0 else 'the bot opens.') + ' Both sides have an equal chance.']
         previous = _matches[session].arena_index if session in _matches else None
         match.arena_index = choice([i for i in range(len(ARENAS)) if i != previous])
         # A reset invalidates any outstanding request from the previous match.
         if session in _matches:
             match.revision = _matches[session].revision + 1
+        opening = _snapshot(match)
+        frames = []
+        while match.battle.winner is None:
+            bot_action = choose_action(match.battle, 1)
+            if bot_action is None:
+                break
+            frames.append(_advance(match, bot_action))
         _matches[session] = match
-        return {'state': _snapshot(match)}
+        return {'state': _snapshot(match), 'openingState': opening, 'frames': frames}
 
 
 @router.get('/battle')

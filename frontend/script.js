@@ -6,6 +6,12 @@ let loadouts = {};
 let busy = false;
 let disconnected = false;
 let detailTimer;
+let pendingSwap = null;
+const masteryTools = window.ClashboundMastery;
+let masteryStore;
+try { masteryStore = masteryTools?.createMastery(window.localStorage); }
+catch { masteryStore = masteryTools?.createMastery(); }
+const masteryPoints = id => masteryStore?.points(id) ?? 0;
 const $ = id => document.getElementById(id);
 const TYPES = {Magic:'#6a64a2', Physical:'#9c633b', Spirit:'#3c827c'};
 const TYPE_SYMBOLS = {Magic:'✦',Physical:'◆',Spirit:'◉'};
@@ -58,6 +64,11 @@ function portrait(c, index, enemy = false) {
     ${artwork(c)}<small>${c.name}</small><div class="health"><span style="width:${100*c.hp/c.maxHp}%"></span></div></${enemy?'div':'button'}>`;
 }
 function render() {
+  if (!busy && !disconnected && masteryStore?.observe(state)) {
+    const names=state.teams[0].map(c=>c.name).join(', ');
+    const notice=$('mastery-notice');
+    if(notice)notice.textContent=`+1 mastery for ${names}. Earned through play, regardless of the result.`;
+  }
   $('restart').disabled = busy;
   if (!state) {
     $('moves').replaceChildren(); $('roster').replaceChildren(); $('enemy-roster').replaceChildren();
@@ -65,6 +76,7 @@ function render() {
     return;
   }
   hideDetails();
+  if($('initiative-message'))$('initiative-message').textContent=state.initiative?`Initiative draw · ${state.initiative.firstPlayer===0?'You open':'Bot opens'} · equal chance`:'';
   if (state.arena) {
     const arena=document.querySelector('.arena');
     arena.style.backgroundImage=`url("${state.arena.image}")`;
@@ -76,7 +88,7 @@ function render() {
   for (let p=0; p<2; p++) {
     const c = current(p);
     $(`hud-${p}`).style.setProperty('--type', TYPES[c.type]);
-    $(`hud-${p}`).innerHTML = `<div class="side-label">${p===0?'YOU':'OPPONENT'} <span>${p===0?'PLAYER':'TACTICAL BOT'}</span></div><div class="hud-top"><strong>${c.name}</strong><span class="type" title="${c.type}" aria-label="${c.type}">${TYPE_SYMBOLS[c.type]}</span></div><div class="health" role="meter" aria-label="${p===0?'Your':'Opponent'} health" aria-valuemin="0" aria-valuemax="${c.maxHp}" aria-valuenow="${c.hp}"><span style="width:${100*c.hp/c.maxHp}%"></span></div><div class="hp">${c.hp} / ${c.maxHp} HP</div>${c.guardPercent?`<div class="guard-state">◈ NEXT HIT −${c.guardPercent}%</div>`:''}`;
+    $(`hud-${p}`).innerHTML = `<div class="side-label">${p===0?'YOU':'OPPONENT'} <span>${p===0?'PLAYER':'TACTICAL BOT'}</span></div><div class="hud-top"><strong>${c.name}${p===0 && masteryStore?.equipped(c.id)?'<span class="mastery-crest" title="Mastery crest · cosmetic only"> ✧</span>':''}</strong><span class="type" title="${c.type}" aria-label="${c.type}">${TYPE_SYMBOLS[c.type]}</span></div><div class="health" role="meter" aria-label="${p===0?'Your':'Opponent'} health" aria-valuemin="0" aria-valuemax="${c.maxHp}" aria-valuenow="${c.hp}"><span style="width:${100*c.hp/c.maxHp}%"></span></div><div class="hp">${c.hp} / ${c.maxHp} HP</div>${c.guardPercent?`<div class="guard-state">◈ NEXT HIT −${c.guardPercent}%</div>`:''}`;
     $(`hud-${p}`).innerHTML += effectIndicators(c,p);
     $(`fighter-${p}`).innerHTML = artwork(c);
     $(`fighter-${p}`).classList.toggle('fainted', c.hp===0);
@@ -103,6 +115,7 @@ function render() {
     $('result-title').textContent=state.winner===0?'Victory':'Defeat';
     $('result-copy').textContent=state.winner===0?'Your team takes the arena.':'The bot takes this battle. Your next move awaits.';
     $('result-team').textContent=state.teams[state.winner].map(c=>c.name).join(' · ');
+    if($('result-mastery'))$('result-mastery').textContent=state.teams[0].map(c=>`${c.name}: ${masteryPoints(c.id)} mastery`).join(' · ');
     if(!result.open)result.showModal();
   }
 
@@ -142,13 +155,9 @@ function openSwitch(preferred) {
   if (!$('switch-dialog').open) $('switch-dialog').showModal();
   if (preferred!==undefined) $('switch-options').querySelector(`[data-slot="${preferred}"]`)?.focus();
 }
-async function sendAction(kind,index) {
-  if (!allowed(kind,index)) return;
-  busy=true; setError(); $('switch-dialog').close(); render();
-  try {
-    const data=await request('/api/battle/actions',{kind,index,revision:state.revision});
-    for (let i=0;i<data.frames.length;i++) {
-      const frame=data.frames[i];
+async function presentFrames(frames) {
+    for (let i=0;i<frames.length;i++) {
+      const frame=frames[i];
       state=frame;render();
       if(frame.animation && typeof document.createElement==='function') playMoveEffect(frame.animation,null);
 
@@ -181,8 +190,15 @@ async function sendAction(kind,index) {
       }
       // Keep the outcome readable, then pause before presenting the next action.
       if (frame.animation) await delay(FRAME_READ_MS);
-      if (i<data.frames.length-1) await delay(BOT_PAUSE_MS);
+      if (i<frames.length-1) await delay(BOT_PAUSE_MS);
     }
+}
+async function sendAction(kind,index) {
+  if (!allowed(kind,index)) return;
+  busy=true; setError(); $('switch-dialog').close(); render();
+  try {
+    const data=await request('/api/battle/actions',{kind,index,revision:state.revision});
+    await presentFrames(data.frames);
   } catch (error) {
     // Read the saved result after a lost response; never replay a move blindly.
     try { state=(await request('/api/battle')).state; }
@@ -208,29 +224,53 @@ function renderChoices() {
   };
   $('team-options').innerHTML=groups.map(group=>`<section class="team-group" aria-labelledby="team-${group.id}"><h3 id="team-${group.id}">${group.name}</h3><div class="team-row">${group.characters.map(choice).join('')}</div></section>`).join('');
   $('team-options').querySelectorAll('button').forEach(button=>button.onclick=()=>{
-    const id=button.dataset.id; selection=selection.includes(id)?selection.filter(c=>c!==id):[...selection,id];
+    pendingSwap=null; const id=button.dataset.id; selection=selection.includes(id)?selection.filter(c=>c!==id):[...selection,id];
     renderChoices(); $('team-options').querySelector(`[data-id="${id}"]`).focus();
   });
+  const describe=(c,m)=>masteryTools?.describeMove(m,c.stats)??`${m.power??0} power`;
   $('loadout-options').innerHTML=selection.map(id=>{
     const c=catalog.find(c=>c.id===id);if(!c?.movePool)return '';
     const chosen=loadouts[id]??(loadouts[id]=[0,1,2,3]);
-    return `<fieldset class="loadout"><legend>${c.name} · ${chosen.length}/4 moves</legend><details><summary>Character stats</summary><small>${Object.entries(c.stats).map(([k,v])=>`${k} ${v}`).join(' · ')}</small></details><div>${c.movePool.map((m,i)=>{
-      const fixed=c.signatureMoves.includes(i),checked=chosen.includes(i);
-      return `<label><input type="checkbox" data-character="${id}" data-pool="${i}" ${checked?'checked':''} ${fixed||busy||(!checked&&chosen.length===4)?'disabled':''}>${m.name}${fixed?' · signature':''}</label>`;
-    }).join('')}</div></fieldset>`;
+    const points=masteryPoints(id),reward=c.mastery;
+    const unlocked=reward && points>=reward.moveAt;
+    const cosmetic=reward && points>=reward.cosmeticAt;
+    return `<fieldset class="loadout"><legend>${c.name} · four moves</legend>
+      <p class="playstyle">${escapeText(c.playstyle??'Choose moves that support your preferred playstyle.')}</p>
+      <details><summary>Character stats &amp; story</summary><p class="character-lore">${escapeText(c.lore??'')}</p><small>${Object.entries(c.stats).map(([k,v])=>`${k} ${v}`).join(' · ')}</small></details>
+      ${reward?`<div class="mastery-progress"><strong>${points} mastery</strong><span>${unlocked?'Sidegrade unlocked':`${Math.max(0,reward.moveAt-points)} more for ${escapeText(c.movePool[6].name)}`} · ${cosmetic?'Crest unlocked':`${Math.max(0,reward.cosmeticAt-points)} more for the ${escapeText(reward.cosmetic)} crest`}</span>${cosmetic?`<button type="button" data-cosmetic="${id}" aria-pressed="${masteryStore?.equipped(id)??false}">${masteryStore?.equipped(id)?'Remove':'Equip'} ${escapeText(reward.cosmetic)} crest · cosmetic only</button>`:''}</div>`:''}
+      <h4>Equipped</h4><div class="equipped-moves">${chosen.map(i=>{
+        const m=c.movePool[i],fixed=c.signatureMoves.includes(i);
+        return `<div class="build-move"><strong>${escapeText(m.name)}</strong><small>${escapeText(describe(c,m))}</small><span>${fixed?'Signature · fixed':'Flexible slot'}</span></div>`;
+      }).join('')}</div>
+      <h4>Try a different move</h4><p class="swap-hint">Choose an alternative, then choose which flexible move it replaces. Both signatures stay.</p>
+      <div class="alternative-moves">${c.movePool.map((m,i)=>{
+        if(chosen.includes(i))return '';
+        const locked=reward && i===reward.moveIndex && !unlocked;
+        return `<div class="build-move ${locked?'locked-reward':''}"><strong>${escapeText(m.name)}</strong><small>${escapeText(describe(c,m))}</small>${reward && i===reward.moveIndex?`<small class="tradeoff">Trade-off: ${escapeText(reward.tradeoff)}</small>`:''}<button type="button" data-compare="${id}" data-pool="${i}" ${locked||busy?'disabled':''}>${locked?`Unlock at ${reward.moveAt} mastery`:'Compare & swap'}</button></div>`;
+      }).join('')}</div>
+      ${pendingSwap?.id===id?`<div class="swap-comparison" role="region" aria-label="Compare move replacement"><h4>Swap in ${escapeText(c.movePool[pendingSwap.index].name)}</h4><small>${escapeText(describe(c,c.movePool[pendingSwap.index]))}</small><p>Replace one of these:</p>${chosen.filter(i=>!c.signatureMoves.includes(i)).map(i=>`<button type="button" data-replace="${id}" data-old="${i}"><strong>${escapeText(c.movePool[i].name)} → ${escapeText(c.movePool[pendingSwap.index].name)}</strong><small>Before: ${escapeText(describe(c,c.movePool[i]))}</small><small>After: ${escapeText(describe(c,c.movePool[pendingSwap.index]))}</small></button>`).join('')}<button type="button" data-cancel-swap>Keep current build</button></div>`:''}
+    </fieldset>`;
   }).join('');
-  $('loadout-options').querySelectorAll('input').forEach(input=>input.onchange=()=>{
-    const id=input.dataset.character,index=Number(input.dataset.pool);
-    loadouts[id]=input.checked?[...loadouts[id],index]:loadouts[id].filter(i=>i!==index);
-    renderChoices();
+  $('loadout-options').querySelectorAll('[data-compare]').forEach(button=>button.onclick=()=>{
+    pendingSwap={id:button.dataset.compare,index:Number(button.dataset.pool)};renderChoices();
+    $('loadout-options').querySelector(`[data-replace="${pendingSwap.id}"]`)?.focus();
   });
+  $('loadout-options').querySelectorAll('[data-replace]').forEach(button=>button.onclick=()=>{
+    const id=button.dataset.replace,c=catalog.find(c=>c.id===id);
+    loadouts[id]=masteryTools.replaceMove(loadouts[id],c.signatureMoves,Number(button.dataset.old),pendingSwap.index);
+    pendingSwap=null;renderChoices();
+    $('loadout-options').querySelector(`[data-compare="${id}"]`)?.focus();
+  });
+  $('loadout-options').querySelectorAll('[data-cancel-swap]').forEach(button=>button.onclick=()=>{pendingSwap=null;renderChoices();});
+  $('loadout-options').querySelectorAll('[data-cosmetic]').forEach(button=>button.onclick=()=>{masteryStore?.toggleCosmetic(button.dataset.cosmetic);renderChoices();});
+  if($('mastery-save-note'))$('mastery-save-note').textContent=masteryStore?.saved()===false?'Browser storage is unavailable. Progress works for this page, but may disappear when you close it.':'Saved only in this browser. Clearing site data removes mastery. No accounts or stat bonuses.';
   $('start-battle').disabled=busy || disconnected || selection.length!==3 || selection.some(id=>(loadouts[id]?.length??4)!==4);
   $('start-battle').textContent=busy?'Starting…':`Enter arena · ${selection.length} / 3`;
 }
 function openTeamPicker(fresh=false) {
   if (busy) return;
   $('switch-dialog').close();hideDetails();
-  if(fresh){selection=[];loadouts={};}else selection=state?state.teams[0].map(c=>c.id):selection;
+  if(fresh){selection=[];loadouts={};pendingSwap=null;}else selection=state?state.teams[0].map(c=>c.id):selection;
   $('team-cancel').hidden=!state;
   renderChoices();
   if (!$('team-dialog').open) $('team-dialog').showModal();
@@ -239,8 +279,11 @@ async function startBattle() {
   if (busy || selection.length!==3 || disconnected) return;
   busy=true;setError();renderChoices();render();
   try {
-    state=(await request('/api/battle',{roster:selection,loadouts:Object.fromEntries(selection.map(id=>[id,loadouts[id]??[0,1,2,3]]))})).state;
-    $('team-dialog').close();
+    const data=await request('/api/battle',{roster:selection,loadouts:Object.fromEntries(selection.map(id=>[id,loadouts[id]??[0,1,2,3]]))});
+    state=data.openingState??data.state;
+    $('team-dialog').close();render();
+    if(data.frames?.length){await delay(FRAME_READ_MS);await presentFrames(data.frames);}
+    state=data.state;
   } catch (error) { setError(error.status?error.message:'Could not start a battle. Check the server and try again.'); }
   finally { busy=false;renderChoices();render(); }
 }

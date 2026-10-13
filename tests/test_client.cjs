@@ -142,3 +142,21 @@ for (const winner of [0,1]) for (const cancellation of ['close button','Escape']
     assert.equal(get('result-team').textContent,'Mage');
   });
 }
+
+test('bot opening announces initiative and stays locked until opening feedback completes',async()=>{
+ const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);};
+ const c={id:'mage',name:'Mage',type:'Magic',hp:100,maxHp:100,moves:[]};
+ const ready={teams:[[c],[c]],active:[0,0],player:0,replacement:null,winner:null,turn:1,revision:0,actions:[{kind:'move',index:0}],log:[]};
+ const opening={...ready,player:1,actions:[],initiative:{firstPlayer:1}};
+ const bot={...ready,turn:2,initiative:{firstPlayer:1},animation:{kind:'attack',actor:1,target:0}};
+ const replies=[[],{state:ready},{openingState:opening,state:bot,frames:[bot]}],timers=[],waits=[];
+ const context=vm.createContext({document:{getElementById:get,querySelector:get,querySelectorAll:()=>[],addEventListener(){}},window:{addEventListener(){}},setTimeout:(fn,ms)=>{timers.push(fn);waits.push(ms);},clearTimeout(){},AbortSignal,fetch:async()=>({ok:true,json:async()=>replies.shift()})});
+ vm.runInContext(readFileSync(new URL('../frontend/script.js',`file://${__filename}`),'utf8'),context);
+ await new Promise(setImmediate);vm.runInContext('selection=["mage","sporestag","glowmire"]',context);
+ const start=vm.runInContext('startBattle()',context);await new Promise(setImmediate);
+ assert.match(get('initiative-message').textContent,/Bot opens/);assert.equal(vm.runInContext('allowed("move",0)',context),false);
+ timers.splice(0).forEach(f=>f());await new Promise(setImmediate);
+ assert.equal(vm.runInContext('state.turn',context),2);assert.equal(vm.runInContext('allowed("move",0)',context),false);
+ timers.splice(0).forEach(f=>f());await start;
+ assert.equal(vm.runInContext('allowed("move",0)',context),true);assert.deepEqual(waits,[1800,460,1800]);
+});
