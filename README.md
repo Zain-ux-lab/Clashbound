@@ -8,7 +8,7 @@ and use type matchups and signature abilities to win.
 
 **Stack:** Python / FastAPI backend; JavaScript, HTML and CSS frontend.
 **Mode:** single player against a deterministic tactical bot.
-**Demo:** local demo available; public hosting is pending.
+**Demo:** [Play Clashbound](https://clashbound.onrender.com/) (free Render instance; initial loading may take a minute).
 
 ![Colosseum arena artwork](frontend/assets/arenas/01-colosseum.png)
 
@@ -33,6 +33,30 @@ a restart clears them.
 
 See the [CV and interview pack](docs/CV_AND_PORTFOLIO.md) for a concise project
 entry, engineering evidence, a demo walkthrough and interview preparation.
+
+## Mastery and the Accord
+
+Humans and creatures form mixed Accord teams in a world shaped by the Fracture.
+The lore gives future arena interactions a foundation; arenas are currently visual only.
+A fair 50/50 draw decides the opening player, independently of stats and mastery.
+Bot opening actions use the same paced feedback as normal turns.
+
+All ten characters and their original six move choices remain available. Each gains
+one sidegrade at 3 mastery and an optional named crest at 6. One qualifying match
+awards +1 to each of the three selected characters after 3 player actions, or an earlier
+completed match with at least one player action. Wins are not required. Free knockout
+replacements do not count as actions. No rewards change character stats.
+
+Progress uses independently keyed match awards and cosmetic choices in `localStorage`,
+so overlapping tab writes cannot erase another match reward. Saved mastery survives
+closing/reopening this browser on the same site. Unfinished battles remain temporary. Clearing
+site data removes it; private browsing may not retain it. Browser edits can bypass
+unlocks: this single-player prototype is not an account or anti-cheat system. API
+validation still enforces legal four-move builds with both signatures.
+Bot search/stats stay unchanged and bot builds use the original six choices; random
+trios exclude the preceding trio, and lead order is shuffled.
+
+See [mastery and sidegrade details](docs/MASTERY_AND_LORE.md).
 
 ## Team
 

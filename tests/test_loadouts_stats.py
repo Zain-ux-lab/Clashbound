@@ -18,7 +18,7 @@ def test_focus_ward_and_power_armour_scale_separately():
 def test_custom_loadouts_are_locked_validated_and_persisted():
     with TestClient(app) as client:
         roster=client.get('/api/roster').json()
-        assert all(len(c['movePool'])==6 and len(c['signatureMoves'])==2 for c in roster)
+        assert all(len(c['movePool'])==7 and len(c['signatureMoves'])==2 for c in roster)
         picks=['mage','sporestag','glowmire']
         selected={c:BY_ID[c]['signatureMoves']+[4,5] for c in picks}
         response=client.post('/api/battle',json={'roster':picks,'loadouts':selected})

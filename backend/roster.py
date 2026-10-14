@@ -73,9 +73,50 @@ ALTERNATIVES = {
     'hushwing':[status('Unsettling Cry','expose','Spirit'), attack('Moon Spark',20,'Magic')],
     'riftclaw':[guard('Phase Shell','Spirit'), status('Nerve Tear','weaken','Physical')],
 }
+# Mastery adds choices, never stats. All six original pool indices remain stable.
+PLAYSTYLES = {
+ 'mage':'Spell setup: prepare echoes, then pressure with magic. Physical coverage handles resistant targets.',
+ 'sporestag':'Attrition: seed spores and harvest their damage bonus. Tough armour supports staying in play.',
+ 'glowmire':'Sustain: drain small amounts of health or spend a turn healing. Fragile against physical pressure.',
+ 'bramblebelly':'Contact punishment: thorn retaliation and a sturdy body punish close attacks.',
+ 'veyne':'Precision: mark a target before Piercing Volley. Ranged attacks avoid thorn retaliation.',
+ 'coil':'Disruption: paralysis and weakening limit enemy plans. Strong magic, modest healing.',
+ 'bastion':'Counterpressure: guard while attacking, then turn incoming damage into Reprisal.',
+ 'vesperfang':'Pressure: strong magic backed by Dread and exposure. Spirit coverage changes matchups.',
+ 'hushwing':'Recovery and confusion: heal efficiently and mark a dangerous enemy move with recoil.',
+ 'riftclaw':'Guard breaker: Phase Strike bypasses guard. Spirit contact attacks trade safety for power.',
+}
+LORE = {
+ 'mage':'An Accord rune-reader who charts the Fracture and teaches allies to control its echoes.',
+ 'sporestag':'A guardian of the Verdant Ruins whose spores carry the forest’s memory.',
+ 'glowmire':'A wandering lantern spirit that guides lost travellers through unstable rifts.',
+ 'bramblebelly':'A grove sentinel who joined the Accord to protect new growth from the Fracture.',
+ 'veyne':'A frontier scout who maps safe paths between the scattered arenas.',
+ 'coil':'A storm-channeler who learned to contain volatile energy instead of letting it spread.',
+ 'bastion':'An Accord shieldbearer sworn to hold the line for humans and creatures alike.',
+ 'vesperfang':'A twilight dragon who guards the crossings between the old world and the fractured sky.',
+ 'hushwing':'A moonlit spirit attended by five spirit bats, whose songs settle frightened minds and mislead hostile ones.',
+ 'riftclaw':'A creature born at a rift’s edge, now learning to close the cracks it once travelled through.',
+}
+SIDEGRADES = {
+ 'mage':(dict(name='Rune Aegis',power=6,effect='guard',effect_amount=45,damage_type='Magic'),3,'Half the power of Arcane Ward, but 45% guard instead of 30%.','Runekeeper'),
+ 'sporestag':(attack('Bark Lance',18,'Physical'),0,'18 power instead of Horn Jab’s 22; ranged contact safety avoids Thorn Coat retaliation.','Grovekeeper'),
+ 'glowmire':(dict(name='Beacon Aegis',power=6,effect='guard',effect_amount=45,damage_type='Magic'),5,'Half the power of Lantern Ward, but 45% guard instead of 30%.','Beaconkeeper'),
+ 'bramblebelly':(dict(name='Briar Aegis',power=6,effect='guard',effect_amount=45,damage_type='Spirit'),1,'Half the power of Root Snare, but 45% guard instead of 30%.','Thornkeeper'),
+ 'veyne':(attack('Close Quarters',26,'Physical',contact=True),0,'26 power instead of Steady Shot’s 22, but contact can trigger Thorn Coat retaliation.','Trailkeeper'),
+ 'coil':(attack('Live Wire',28,'Magic',contact=True),0,'28 power instead of Spark Bolt’s 23, but contact can trigger Thorn Coat retaliation.','Stormkeeper'),
+ 'bastion':(dict(name='Shield Wall',power=6,effect='guard',effect_amount=45,damage_type='Physical',contact=True),0,'Half the power of Shield Bash, but 45% guard instead of 30%. Contact risk remains.','Stonekeeper'),
+ 'vesperfang':(attack('Night Flight',17,'Spirit'),1,'17 power instead of Night Fang’s 21; ranged contact safety avoids Thorn Coat retaliation.','Duskkeeper'),
+ 'hushwing':(attack('Razor Gust',16,'Physical'),2,'16 power instead of Wing Buffet’s 20; ranged contact safety avoids Thorn Coat retaliation.','Moonkeeper'),
+ 'riftclaw':(attack('Rift Dart',20,'Spirit'),0,'20 power instead of Rift Slash’s 24; ranged contact safety avoids Thorn Coat retaliation.','Riftkeeper'),
+}
 for character in ROSTER:
     power,focus,armour,ward,recovery=PROFILES[character['id']]
     character['stats']=dict(hp=character['maxHp'],power=power,focus=focus,armour=armour,ward=ward,recovery=recovery)
     character['signatureMoves']=SIGNATURES[character['id']]
-    character['movePool']=character['moves']+ALTERNATIVES[character['id']]
+    extra,compare,tradeoff,cosmetic=SIDEGRADES[character['id']]
+    character['playstyle']=PLAYSTYLES[character['id']]
+    character['lore']=LORE[character['id']]
+    character['mastery']=dict(moveIndex=6,moveAt=3,cosmeticAt=6,compareTo=compare,tradeoff=tradeoff,cosmetic=cosmetic)
+    character['movePool']=character['moves']+ALTERNATIVES[character['id']]+[extra]
 BY_ID = {character['id']: character for character in ROSTER}
