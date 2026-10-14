@@ -21,7 +21,7 @@ Alternating turns; speed affects opening only; no campaign; reserve selections a
 - [x] 1. Write failing engine/initiative scenarios in tests/test_passives.py. Extend Creature, Move and Action data; implement all ten mechanics in the shared turn engine, targeting and four-type chart. Verify scenarios and legacy engine suite.
 - [x] 2. Update backend/roster.py, API target validation, initiative and snapshots. Keep displaced moves and formerly earned choices available without gates. Add API scenarios; verify API/loadout/bot suites.
 - [x] 3. Add concise passive explanations, full move details, target picker and lead selection guidance to existing frontend. Update guide and character copy from shared roster data. Test targeted move interactions, keyboard cancellation, initiative and blocked states with Node.
-- [ ] 4. Run complete Python/Node checks, play seeded matches through engine and HTTP to exercise every roster and a live browser if tooling allows. Review diff, fix regressions, commit and push feature branch. Create and attach a PR for Abi's review without merging or deploying.
+- [x] 4. Run complete Python/Node checks, play seeded matches through engine and HTTP to exercise every roster and a live browser if tooling allows. Review diff, fix regressions, commit and push feature branch. Create and attach a PR for Abi's review without merging or deploying.
 
 ## Execution record
 - User explicitly removed mastery, move unlocks and earned cosmetics during implementation. Former reward moves remain ordinary available choices; unused saved progress is left untouched.
@@ -29,4 +29,6 @@ Alternating turns; speed affects opening only; no campaign; reserve selections a
 - Baseline: 85 Python passes and one pre-existing random bot-reply assertion failure; 29 Node passes. The test fixed only part of the roster RNG and assumed every reply attacked. Seeded both roster draws and made the reply assertion accept legal switching/special actions.
 - Engine/API targeted tests were run RED before implementing missing passives, targets and Speed. New damage-type expectations intentionally replace the old three-type cycle.
 - Independent read-only review found five issues: new wounds paid during Seal; Called Shot firing on an escort's incoming ally; stale Reprisal after reserve attacks; forced Drag lost on recoil KO; non-move targets raising500. Each reproduced in a failing regression and was fixed. Nightfall/Called Shot cancellation also has a regression.
-- Complete verification after review fixes: 111 Python tests and21 Node tests pass; seeded full-match evaluation and live browser target/cancellation/catalog/guide/landscape checks pass. Details and final totals in docs/CHARACTER_MECHANICS.md.
+- Complete verification after review fixes: 111 Python tests and 21 Node tests pass; seeded full-match evaluation and live browser target/cancellation/catalog/guide/landscape checks pass. Details and final totals in docs/CHARACTER_MECHANICS.md.
+
+- Published branch feature/character-passives-speed and draft PR #30: https://github.com/Zain-ux-lab/Clashbound/pull/30. No merge or deployment.
