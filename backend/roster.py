@@ -95,7 +95,7 @@ LORE = {
  'coil':'A storm-channeler who learned to contain volatile energy instead of letting it spread.',
  'bastion':'An Accord shieldbearer sworn to hold the line for humans and creatures alike.',
  'vesperfang':'A twilight dragon who guards the crossings between the old world and the fractured sky.',
- 'hushwing':'A moonlit spirit whose songs settle frightened minds and mislead hostile ones.',
+ 'hushwing':'A moonlit spirit attended by five spirit bats, whose songs settle frightened minds and mislead hostile ones.',
  'riftclaw':'A creature born at a rift’s edge, now learning to close the cracks it once travelled through.',
 }
 SIDEGRADES = {

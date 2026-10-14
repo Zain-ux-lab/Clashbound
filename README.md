@@ -47,7 +47,9 @@ awards +1 to each of the three selected characters after 3 player actions, or an
 completed match with at least one player action. Wins are not required. Free knockout
 replacements do not count as actions. No rewards change character stats.
 
-Progress is stored in `localStorage` for this browser and site origin only. Clearing
+Progress uses independently keyed match awards and cosmetic choices in `localStorage`,
+so overlapping tab writes cannot erase another match reward. Saved mastery survives
+closing/reopening this browser on the same site. Unfinished battles remain temporary. Clearing
 site data removes it; private browsing may not retain it. Browser edits can bypass
 unlocks: this single-player prototype is not an account or anti-cheat system. API
 validation still enforces legal four-move builds with both signatures.

@@ -7,6 +7,7 @@ let busy = false;
 let disconnected = false;
 let detailTimer;
 let pendingSwap = null;
+const expandedBuilds = new Set();
 const masteryTools = window.ClashboundMastery;
 let masteryStore;
 try { masteryStore = masteryTools?.createMastery(window.localStorage); }
@@ -88,7 +89,7 @@ function render() {
   for (let p=0; p<2; p++) {
     const c = current(p);
     $(`hud-${p}`).style.setProperty('--type', TYPES[c.type]);
-    $(`hud-${p}`).innerHTML = `<div class="side-label">${p===0?'YOU':'OPPONENT'} <span>${p===0?'PLAYER':'TACTICAL BOT'}</span></div><div class="hud-top"><strong>${c.name}${p===0 && masteryStore?.equipped(c.id)?'<span class="mastery-crest" title="Mastery crest · cosmetic only"> ✧</span>':''}</strong><span class="type" title="${c.type}" aria-label="${c.type}">${TYPE_SYMBOLS[c.type]}</span></div><div class="health" role="meter" aria-label="${p===0?'Your':'Opponent'} health" aria-valuemin="0" aria-valuemax="${c.maxHp}" aria-valuenow="${c.hp}"><span style="width:${100*c.hp/c.maxHp}%"></span></div><div class="hp">${c.hp} / ${c.maxHp} HP</div>${c.guardPercent?`<div class="guard-state">◈ NEXT HIT −${c.guardPercent}%</div>`:''}`;
+    $(`hud-${p}`).innerHTML = `<div class="side-label">${p===0?'YOU':'OPPONENT'} <span>${p===0?'PLAYER':'TACTICAL BOT'}</span></div><div class="hud-top"><strong>${c.name}${p===0 && masteryStore?.equipped(c.id)?(masteryTools?.crestMarkup(c.id)??''):''}</strong><span class="type" title="${c.type}" aria-label="${c.type}">${TYPE_SYMBOLS[c.type]}</span></div><div class="health" role="meter" aria-label="${p===0?'Your':'Opponent'} health" aria-valuemin="0" aria-valuemax="${c.maxHp}" aria-valuenow="${c.hp}"><span style="width:${100*c.hp/c.maxHp}%"></span></div><div class="hp">${c.hp} / ${c.maxHp} HP</div>${c.guardPercent?`<div class="guard-state">◈ NEXT HIT −${c.guardPercent}%</div>`:''}`;
     $(`hud-${p}`).innerHTML += effectIndicators(c,p);
     $(`fighter-${p}`).innerHTML = artwork(c);
     $(`fighter-${p}`).classList.toggle('fainted', c.hp===0);
@@ -224,9 +225,11 @@ function renderChoices() {
   };
   $('team-options').innerHTML=groups.map(group=>`<section class="team-group" aria-labelledby="team-${group.id}"><h3 id="team-${group.id}">${group.name}</h3><div class="team-row">${group.characters.map(choice).join('')}</div></section>`).join('');
   $('team-options').querySelectorAll('button').forEach(button=>button.onclick=()=>{
-    pendingSwap=null; const id=button.dataset.id; selection=selection.includes(id)?selection.filter(c=>c!==id):[...selection,id];
+    if(busy)return;
+    pendingSwap=null; const id=button.dataset.id;if(!selection.length)expandedBuilds.add(id); selection=selection.includes(id)?selection.filter(c=>c!==id):[...selection,id];
     renderChoices(); $('team-options').querySelector(`[data-id="${id}"]`).focus();
   });
+  $('loadout-options').querySelectorAll('.character-build').forEach(node=>{if(node.open)expandedBuilds.add(node.dataset.build);else expandedBuilds.delete(node.dataset.build);});
   const describe=(c,m)=>masteryTools?.describeMove(m,c.stats)??`${m.power??0} power`;
   $('loadout-options').innerHTML=selection.map(id=>{
     const c=catalog.find(c=>c.id===id);if(!c?.movePool)return '';
@@ -234,10 +237,10 @@ function renderChoices() {
     const points=masteryPoints(id),reward=c.mastery;
     const unlocked=reward && points>=reward.moveAt;
     const cosmetic=reward && points>=reward.cosmeticAt;
-    return `<fieldset class="loadout"><legend>${c.name} · four moves</legend>
+    return `<details class="character-build" data-build="${id}" ${expandedBuilds.has(id)?'open':''}><summary>${c.name} · four moves · ${points} mastery</summary><fieldset class="loadout"><legend>${c.name} · four moves</legend>
       <p class="playstyle">${escapeText(c.playstyle??'Choose moves that support your preferred playstyle.')}</p>
       <details><summary>Character stats &amp; story</summary><p class="character-lore">${escapeText(c.lore??'')}</p><small>${Object.entries(c.stats).map(([k,v])=>`${k} ${v}`).join(' · ')}</small></details>
-      ${reward?`<div class="mastery-progress"><strong>${points} mastery</strong><span>${unlocked?'Sidegrade unlocked':`${Math.max(0,reward.moveAt-points)} more for ${escapeText(c.movePool[6].name)}`} · ${cosmetic?'Crest unlocked':`${Math.max(0,reward.cosmeticAt-points)} more for the ${escapeText(reward.cosmetic)} crest`}</span>${cosmetic?`<button type="button" data-cosmetic="${id}" aria-pressed="${masteryStore?.equipped(id)??false}">${masteryStore?.equipped(id)?'Remove':'Equip'} ${escapeText(reward.cosmetic)} crest · cosmetic only</button>`:''}</div>`:''}
+      ${reward?`<div class="mastery-progress"><strong>${points} mastery</strong><span>${unlocked?'Sidegrade unlocked':`${Math.max(0,reward.moveAt-points)} more for ${escapeText(c.movePool[6].name)}`} · ${cosmetic?'Crest unlocked':`${Math.max(0,reward.cosmeticAt-points)} more for the ${escapeText(reward.cosmetic)} crest`}</span>${cosmetic?`<button type="button" data-cosmetic="${id}" ${busy?'disabled':''} aria-pressed="${masteryStore?.equipped(id)??false}">${masteryTools?.crestMarkup(id)??''} ${masteryStore?.equipped(id)?'Remove':'Equip'} ${escapeText(reward.cosmetic)} crest · cosmetic only</button>`:''}</div>`:''}
       <h4>Equipped</h4><div class="equipped-moves">${chosen.map(i=>{
         const m=c.movePool[i],fixed=c.signatureMoves.includes(i);
         return `<div class="build-move"><strong>${escapeText(m.name)}</strong><small>${escapeText(describe(c,m))}</small><span>${fixed?'Signature · fixed':'Flexible slot'}</span></div>`;
@@ -248,29 +251,31 @@ function renderChoices() {
         const locked=reward && i===reward.moveIndex && !unlocked;
         return `<div class="build-move ${locked?'locked-reward':''}"><strong>${escapeText(m.name)}</strong><small>${escapeText(describe(c,m))}</small>${reward && i===reward.moveIndex?`<small class="tradeoff">Trade-off: ${escapeText(reward.tradeoff)}</small>`:''}<button type="button" data-compare="${id}" data-pool="${i}" ${locked||busy?'disabled':''}>${locked?`Unlock at ${reward.moveAt} mastery`:'Compare & swap'}</button></div>`;
       }).join('')}</div>
-      ${pendingSwap?.id===id?`<div class="swap-comparison" role="region" aria-label="Compare move replacement"><h4>Swap in ${escapeText(c.movePool[pendingSwap.index].name)}</h4><small>${escapeText(describe(c,c.movePool[pendingSwap.index]))}</small><p>Replace one of these:</p>${chosen.filter(i=>!c.signatureMoves.includes(i)).map(i=>`<button type="button" data-replace="${id}" data-old="${i}"><strong>${escapeText(c.movePool[i].name)} → ${escapeText(c.movePool[pendingSwap.index].name)}</strong><small>Before: ${escapeText(describe(c,c.movePool[i]))}</small><small>After: ${escapeText(describe(c,c.movePool[pendingSwap.index]))}</small></button>`).join('')}<button type="button" data-cancel-swap>Keep current build</button></div>`:''}
-    </fieldset>`;
+      ${pendingSwap?.id===id?`<div class="swap-comparison" role="region" aria-label="Compare move replacement"><h4>Swap in ${escapeText(c.movePool[pendingSwap.index].name)}</h4><small>${escapeText(describe(c,c.movePool[pendingSwap.index]))}</small><p>Replace one of these:</p>${chosen.filter(i=>!c.signatureMoves.includes(i)).map(i=>`<button type="button" data-replace="${id}" data-old="${i}" ${busy?'disabled':''}><strong>${escapeText(c.movePool[i].name)} → ${escapeText(c.movePool[pendingSwap.index].name)}</strong><small>Before: ${escapeText(describe(c,c.movePool[i]))}</small><small>After: ${escapeText(describe(c,c.movePool[pendingSwap.index]))}</small></button>`).join('')}<button type="button" data-cancel-swap ${busy?'disabled':''}>Keep current build</button></div>`:''}
+    </fieldset></details>`;
   }).join('');
   $('loadout-options').querySelectorAll('[data-compare]').forEach(button=>button.onclick=()=>{
+    if(busy)return;
     pendingSwap={id:button.dataset.compare,index:Number(button.dataset.pool)};renderChoices();
     $('loadout-options').querySelector(`[data-replace="${pendingSwap.id}"]`)?.focus();
   });
   $('loadout-options').querySelectorAll('[data-replace]').forEach(button=>button.onclick=()=>{
+    if(busy||!pendingSwap)return;
     const id=button.dataset.replace,c=catalog.find(c=>c.id===id);
     loadouts[id]=masteryTools.replaceMove(loadouts[id],c.signatureMoves,Number(button.dataset.old),pendingSwap.index);
     pendingSwap=null;renderChoices();
     $('loadout-options').querySelector(`[data-compare="${id}"]`)?.focus();
   });
-  $('loadout-options').querySelectorAll('[data-cancel-swap]').forEach(button=>button.onclick=()=>{pendingSwap=null;renderChoices();});
-  $('loadout-options').querySelectorAll('[data-cosmetic]').forEach(button=>button.onclick=()=>{masteryStore?.toggleCosmetic(button.dataset.cosmetic);renderChoices();});
-  if($('mastery-save-note'))$('mastery-save-note').textContent=masteryStore?.saved()===false?'Browser storage is unavailable. Progress works for this page, but may disappear when you close it.':'Saved only in this browser. Clearing site data removes mastery. No accounts or stat bonuses.';
+  $('loadout-options').querySelectorAll('[data-cancel-swap]').forEach(button=>button.onclick=()=>{if(busy)return;pendingSwap=null;renderChoices();});
+  $('loadout-options').querySelectorAll('[data-cosmetic]').forEach(button=>button.onclick=()=>{if(busy)return;masteryStore?.toggleCosmetic(button.dataset.cosmetic);renderChoices();});
+  if($('mastery-save-note'))$('mastery-save-note').textContent=masteryStore?.saved()===false?'Browser storage is unavailable. Progress works for this page, but may disappear when you close it.':'Mastery and cosmetics survive closing this browser. Unfinished battles may expire. Saves stay on this device; clearing site data removes them.';
   $('start-battle').disabled=busy || disconnected || selection.length!==3 || selection.some(id=>(loadouts[id]?.length??4)!==4);
   $('start-battle').textContent=busy?'Starting…':`Enter arena · ${selection.length} / 3`;
 }
 function openTeamPicker(fresh=false) {
   if (busy) return;
   $('switch-dialog').close();hideDetails();
-  if(fresh){selection=[];loadouts={};pendingSwap=null;}else selection=state?state.teams[0].map(c=>c.id):selection;
+  if(fresh){selection=[];loadouts={};pendingSwap=null;expandedBuilds.clear();}else selection=state?state.teams[0].map(c=>c.id):selection;
   $('team-cancel').hidden=!state;
   renderChoices();
   if (!$('team-dialog').open) $('team-dialog').showModal();

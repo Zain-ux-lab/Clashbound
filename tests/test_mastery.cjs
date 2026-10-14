@@ -1,7 +1,7 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {createMastery,replaceMove,describeMove}=require('../frontend/mastery.js');
-function storage(){const map=new Map();return {getItem:k=>map.get(k)??null,setItem:(k,v)=>map.set(k,v)};}
+function storage(){const map=new Map();return {get length(){return map.size;},key:i=>[...map.keys()][i]??null,getItem:k=>map.get(k)??null,setItem:(k,v)=>map.set(k,v)};}
 function match(id,actions=3,winner=null){return {matchId:id,humanActions:actions,winner,teams:[['mage','sporestag','glowmire'].map(id=>({id}))]};}
 test('play earns progress regardless of victory, once per match across reloads',()=>{
  const s=storage(),m=createMastery(s);
@@ -51,4 +51,33 @@ test('distinct offline-write rewards and another tab’s saved rewards add up wi
  const a=createMastery(s),b=createMastery(s);full=true;a.observe(match('offline'));full=false;b.observe(match('other-tab'));
  a.toggleCosmetic('mage');const restored=createMastery(s);
  assert.equal(restored.points('mage'),8);assert.equal(restored.observe(match('offline')),false);assert.equal(restored.observe(match('other-tab')),false);
+});
+
+test('overlapping cosmetic write cannot overwrite a reward saved after its read',()=>{
+ const s=storage(),seed=createMastery(s);for(let i=0;i<6;i++)seed.observe(match('seed'+i));
+ const a=createMastery(s),b=createMastery(s),write=s.setItem;let overlap=true;
+ s.setItem=(k,v)=>{if(overlap){overlap=false;b.observe(match('seventh'));}write(k,v);};
+ a.toggleCosmetic('mage');const reopened=createMastery(s);
+ assert.equal(reopened.points('mage'),7);assert.equal(reopened.observe(match('seventh')),false);assert.equal(reopened.equipped('mage'),true);
+});
+test('old rewarded matches remain idempotent after more than 256 newer rewards',()=>{
+ const s=storage(),m=createMastery(s);m.observe(match('old'));
+ for(let i=0;i<300;i++)m.observe(match('later'+i));
+ const reopened=createMastery(s);assert.equal(reopened.observe(match('old')),false);assert.equal(reopened.points('mage'),301);
+});
+test('closing and reopening the module preserves mastery, unlocks and the chosen crest',()=>{
+ const s=storage(),m=createMastery(s);for(let i=0;i<6;i++)m.observe(match('played'+i));m.toggleCosmetic('mage');
+ const reopened=createMastery(s);assert.equal(reopened.points('mage'),6);assert.equal(reopened.unlocked('mage'),true);assert.equal(reopened.equipped('mage'),true);
+});
+test('two overlapping distinct match awards both persist, and identical awards count once',()=>{
+ for(const same of [false,true]){
+  const s=storage(),a=createMastery(s),b=createMastery(s),write=s.setItem;let overlap=true;
+  s.setItem=(k,v)=>{if(overlap){overlap=false;b.observe(match(same?'a':'b'));}write(k,v);};
+  a.observe(match('a'));const reopened=createMastery(s);assert.equal(reopened.points('mage'),same?1:2);assert.equal(reopened.observe(match('a')),false);
+ }
+});
+test('legacy totals, claim IDs and cosmetics are retained without rewriting the legacy save',()=>{
+ const s=storage(),old=JSON.stringify({version:1,points:{mage:6},claimed:['already-earned'],cosmetics:{mage:true}});s.setItem('clashbound-mastery-v1',old);
+ const m=createMastery(s);assert.equal(m.points('mage'),6);assert.equal(m.equipped('mage'),true);assert.equal(m.observe(match('already-earned')),false);
+ m.observe(match('new'));m.toggleCosmetic('mage');const reopened=createMastery(s);assert.equal(reopened.points('mage'),7);assert.equal(reopened.equipped('mage'),false);assert.equal(s.getItem('clashbound-mastery-v1'),old);
 });

@@ -5,9 +5,9 @@
 - Every character remains available, with its original six move choices.
 - Choose three allies. Each earns 1 mastery per qualifying match: play three human actions, or finish a shorter match after at least one human action. Victory and defeat reward equally; free replacements do not count.
 - At 3 mastery, a seventh move becomes available in the build picker. Both signatures remain fixed; choose two flexible moves.
-- At 6 mastery, equip or remove that character’s named crest. It appears beside the active character’s name; it changes no stats or rules.
-- Progress saves in the browser under `clashbound-mastery-v1`. Stable server match IDs prevent repeat rewards on refresh. Failed storage writes preserve this page’s in-memory progress and show a warning, but cannot guarantee a save after closing the page.
-- Localhost and the Render URL have separate browser storage. No account, cross-device sync, server ownership verification or anti-cheat is included. The API validates builds; unlock eligibility is a local UI rule.
+- At 6 mastery, equip or remove that character’s named crest, with a distinct rune, leaf, lantern, thorn, arrow, lightning bolt, shield, wing, five-bat cluster or rift symbol. It appears beside the active character’s name; it changes no stats or rules.
+- Progress saves in browser localStorage as separate `clashbound-mastery-v2:award:<matchId>` records and `clashbound-mastery-v2:crest:<characterId>` choices. The old `clashbound-mastery-v1` snapshot is read-only compatibility data, preserving its totals, known claims and cosmetics. Each match reward has its own stable key: overlapping updates cannot overwrite another reward, and new claim IDs are not evicted. Cosmetic updates change only their own key. Refresh all open tabs after upgrading to use the new writer. Failed storage writes preserve this page’s in-memory progress and show a warning, but cannot guarantee a save after closing the page.
+- Closing and reopening the same browser on the same site retains successfully saved mastery and cosmetics. Unfinished battles still live on the server, expire after inactivity and disappear on server restart. Localhost and the Render URL have separate browser storage. No account, cross-device sync, server ownership verification or anti-cheat is included. The API validates builds; unlock eligibility is a local UI rule.
 
 ## Sidegrades
 
@@ -34,7 +34,7 @@ Random bot trios remain disjoint from the human roster, exclude the previous tri
 
 ## Lore
 
-The Fracture scattered unstable magic across the world. Humans and creatures formed the Accord and now practise containment through friendly arena trials. Teams are alliances, not owners and pets or fixed opposing species. Mage reads runes; Sporestag remembers the forest; Glowmire guides travellers; Bramblebelly guards new growth; Veyne maps crossings; Coil contains storms; Bastion protects both peoples; Vesperfang guards twilight crossings; Hushwing calms minds; Riftclaw learns to close the cracks it travels through.
+The Fracture scattered unstable magic across the world. Humans and creatures formed the Accord and now practise containment through friendly arena trials. Teams are alliances, not owners and pets or fixed opposing species. Mage reads runes; Sporestag remembers the forest; Glowmire guides travellers; Bramblebelly guards new growth; Veyne maps crossings; Coil contains storms; Bastion protects both peoples; Vesperfang guards twilight crossings; Hushwing and its five spirit bats calm minds; Riftclaw learns to close the cracks it travels through.
 
 Arena-changing powers and a larger status-interaction system are future design work, not implemented effects. Existing arena art remains unchanged; the new copy is a narrative foundation, not an art redesign.
 
