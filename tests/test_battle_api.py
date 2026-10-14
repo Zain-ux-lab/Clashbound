@@ -12,7 +12,9 @@ PICKS = ['mage', 'sporestag', 'glowmire']
 @pytest.fixture(autouse=True)
 def reproducible_rosters(monkeypatch):
     # Fix only the roster draw; all engine and bot decisions run unchanged.
-    monkeypatch.setattr(routes, 'sample', Random(7).sample)
+    rng=Random(7)
+    monkeypatch.setattr(routes,'sample',rng.sample)
+    monkeypatch.setattr(routes,'choice',rng.choice)
 
 
 def start(client):
@@ -104,8 +106,8 @@ def test_action_runs_bot_and_rejects_duplicate_submission():
         target_after = result['frames'][0]['teams'][1][0]['hp']
         assert target_before - target_after == state['teams'][0][0]['moves'][2]['amount']
         assert {k:result['frames'][0]['animation'][k] for k in ('kind','actor','target')} == {'kind':'attack','actor':0,'target':1}
-        assert result['frames'][1]['animation']['kind'] == 'attack'
-        assert result['frames'][1]['animation']['actor'] == 1
+        # A tactical reply may switch, heal or use a special ability.
+        assert result['frames'][1]['turn'] == result['frames'][0]['turn']+1
         assert client.post('/api/battle/actions', json=action).status_code == 409
         persisted = client.get('/api/battle').json()['state']
         assert {key: value for key, value in result['state'].items() if key != 'animation'} == persisted
@@ -155,10 +157,13 @@ def test_complete_match_replacements_are_free_and_terminal_blocks_actions():
                 break
             if state['replacement'] == 0:
                 kind = 'replace'
-                index = next(i for i, c in enumerate(state['teams'][0]) if c['hp'] > 0)
+                index = next(a['index'] for a in state['actions'] if a['kind']=='replace')
             else:
-                kind, index = 'move', 0
-            response = client.post('/api/battle/actions', json={'kind': kind, 'index': index, 'revision': state['revision']})
+                action=next((a for a in state['actions'] if a['kind']=='move'),state['actions'][0])
+                kind,index=action['kind'],action['index']
+            body={'kind':kind,'index':index,'revision':state['revision']}
+            if kind=='move' and 'target' in action:body['target']=action['target']
+            response=client.post('/api/battle/actions',json=body)
             assert response.status_code == 200, response.text
             result = response.json()
             if kind == 'replace':

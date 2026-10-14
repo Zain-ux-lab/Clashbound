@@ -1,5 +1,5 @@
 """Move type versus defender type; Neutral supports legacy engine callers."""
-STRONG_AGAINST = {'Magic': 'Physical', 'Physical': 'Spirit', 'Spirit': 'Magic'}
+STRONG_AGAINST = {'Magic': 'Elemental', 'Elemental': 'Physical', 'Physical': 'Spirit', 'Spirit': 'Magic'}
 
 
 def effectiveness_percent(attack_type: str, defense_type: str) -> int:

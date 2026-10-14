@@ -4,10 +4,13 @@ from dataclasses import dataclass
 from typing import Literal
 
 
-MoveEffect = Literal["damage", "heal", "guard", "status"]
-TYPES = {"Neutral", "Magic", "Physical", "Spirit"}
+MoveEffect = Literal["damage", "heal", "guard", "status", "special"]
+TYPES = {"Neutral", "Magic", "Physical", "Spirit", "Elemental"}
 STATUS_MOVES = {"spores", "thorns", "mark", "paralyse", "confuse", "weaken", "expose"}
-ATTACK_MECHANICS = {"", "echo", "drain", "exploit", "reprisal", "dread", "phase", "harvest"}
+ATTACK_MECHANICS = {"", "echo", "drain", "exploit", "reprisal", "dread", "phase", "harvest", "drag", "ground_fault"}
+
+
+SPECIAL_MOVES = {"copy", "shed", "escort", "called_shot", "relief", "nightfall", "encore", "seal"}
 
 
 @dataclass(frozen=True)
@@ -27,7 +30,7 @@ class Move:
             raise ValueError("move name must not be empty")
         if self.damage_type not in TYPES:
             raise ValueError("unknown damage type")
-        if self.effect not in {"damage", "heal", "guard", "status"}:
+        if self.effect not in {"damage", "heal", "guard", "status", "special"}:
             raise ValueError("effect must be damage, heal, or guard")
         if self.effect == "damage":
             if self.mechanic not in ATTACK_MECHANICS:
@@ -36,6 +39,9 @@ class Move:
                 raise ValueError("damage move power must be greater than zero")
             if self.effect_amount is not None:
                 raise ValueError("damage move must not have an effect amount")
+        elif self.effect == "special":
+            if self.mechanic not in SPECIAL_MOVES or self.power or self.effect_amount is not None:
+                raise ValueError("invalid special move")
         elif self.effect == "status":
             if self.mechanic not in STATUS_MOVES or self.power < 0 or self.effect_amount is not None:
                 raise ValueError("invalid status move")

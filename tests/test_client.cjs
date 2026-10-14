@@ -163,16 +163,15 @@ test('bot opening announces initiative and stays locked until opening feedback c
 
 test('all build editing handlers refuse changes during battle startup',async()=>{
  const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);};
- const buttons={compare:{dataset:{compare:'mage',pool:'4'}},replace:{dataset:{replace:'mage',old:'1'}},cancel:{dataset:{}},cosmetic:{dataset:{cosmetic:'mage'}}};let cosmeticChanges=0;
+ const buttons={compare:{dataset:{compare:'mage',pool:'4'}},replace:{dataset:{replace:'mage',old:'1'}},cancel:{dataset:{}}};
  get('loadout-options').querySelector=()=>({focus(){}});
- get('loadout-options').querySelectorAll=selector=>({'[data-compare]':[buttons.compare],'[data-replace]':[buttons.replace],'[data-cancel-swap]':[buttons.cancel],'[data-cosmetic]':[buttons.cosmetic]})[selector]??[];
- const tools={crestMarkup:()=>'',createMastery:()=>({points:()=>6,equipped:()=>false,saved:()=>true,observe:()=>false,toggleCosmetic(){cosmeticChanges++;}}),replaceMove:()=>[0,4,2,3],describeMove:()=>''};
- const context=vm.createContext({document:{getElementById:get,querySelector:get,querySelectorAll:()=>[],addEventListener(){}},window:{ClashboundMastery:tools,addEventListener(){}},setTimeout,clearTimeout,AbortSignal,fetch:async()=>({ok:true,json:async()=>[]})});
+ get('loadout-options').querySelectorAll=selector=>({'[data-compare]':[buttons.compare],'[data-replace]':[buttons.replace],'[data-cancel-swap]':[buttons.cancel]})[selector]??[];
+ const tools={replaceMove:()=>[0,4,2,3],describeMove:()=>''};
+ const context=vm.createContext({document:{getElementById:get,querySelector:get,querySelectorAll:()=>[],addEventListener(){}},window:{ClashboundBuilds:tools,addEventListener(){}},setTimeout,clearTimeout,AbortSignal,fetch:async()=>({ok:true,json:async()=>[]})});
  vm.runInContext(readFileSync(new URL('../frontend/script.js',`file://${__filename}`),'utf8'),context);await new Promise(setImmediate);
- vm.runInContext(`catalog=[{id:'mage',name:'Mage',type:'Magic',maxHp:100,stats:{focus:12},moves:[{name:'Bolt',power:22}],movePool:Array.from({length:7},(_,i)=>({name:'Move '+i,power:20})),signatureMoves:[0,2],mastery:{moveAt:3,cosmeticAt:6,moveIndex:6,cosmetic:'Runekeeper'}}];selection=['mage'];loadouts={mage:[0,1,2,3]};pendingSwap={id:'mage',index:5};busy=true;renderChoices();`,context);
+ vm.runInContext(`catalog=[{id:'mage',name:'Mage',type:'Magic',maxHp:100,stats:{focus:12},moves:[{name:'Bolt',power:22}],movePool:Array.from({length:7},(_,i)=>({name:'Move '+i,power:20})),signatureMoves:[0,3]}];selection=['mage'];loadouts={mage:[0,1,2,3]};pendingSwap={id:'mage',index:5};busy=true;renderChoices();`,context);
  buttons.compare.onclick();assert.equal(vm.runInContext('pendingSwap.index',context),5);
  buttons.replace.onclick();assert.equal(vm.runInContext('JSON.stringify(loadouts.mage)',context),'[0,1,2,3]');
  buttons.cancel.onclick();assert.equal(vm.runInContext('pendingSwap.index',context),5);
- buttons.cosmetic.onclick();assert.equal(cosmeticChanges,0);
- for(const attribute of ['data-replace','data-cancel-swap','data-cosmetic'])assert.match(get('loadout-options').innerHTML,new RegExp('<button[^>]*'+attribute+'[^>]*disabled'));
+ for(const attribute of ['data-replace','data-cancel-swap'])assert.match(get('loadout-options').innerHTML,new RegExp('<button[^>]*'+attribute+'[^>]*disabled'));
 });

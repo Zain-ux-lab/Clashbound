@@ -73,7 +73,7 @@ ALTERNATIVES = {
     'hushwing':[status('Unsettling Cry','expose','Spirit'), attack('Moon Spark',20,'Magic')],
     'riftclaw':[guard('Phase Shell','Spirit'), status('Nerve Tear','weaken','Physical')],
 }
-# Mastery adds choices, never stats. All six original pool indices remain stable.
+# Character identity, flavour and move alternatives are separate from progression.
 PLAYSTYLES = {
  'mage':'Spell setup: prepare echoes, then pressure with magic. Physical coverage handles resistant targets.',
  'sporestag':'Attrition: seed spores and harvest their damage bonus. Tough armour supports staying in play.',
@@ -98,25 +98,118 @@ LORE = {
  'hushwing':'A moonlit spirit attended by five spirit bats, whose songs settle frightened minds and mislead hostile ones.',
  'riftclaw':'A creature born at a rift’s edge, now learning to close the cracks it once travelled through.',
 }
-SIDEGRADES = {
- 'mage':(dict(name='Rune Aegis',power=6,effect='guard',effect_amount=45,damage_type='Magic'),3,'Half the power of Arcane Ward, but 45% guard instead of 30%.','Runekeeper'),
- 'sporestag':(attack('Bark Lance',18,'Physical'),0,'18 power instead of Horn Jab’s 22; ranged contact safety avoids Thorn Coat retaliation.','Grovekeeper'),
- 'glowmire':(dict(name='Beacon Aegis',power=6,effect='guard',effect_amount=45,damage_type='Magic'),5,'Half the power of Lantern Ward, but 45% guard instead of 30%.','Beaconkeeper'),
- 'bramblebelly':(dict(name='Briar Aegis',power=6,effect='guard',effect_amount=45,damage_type='Spirit'),1,'Half the power of Root Snare, but 45% guard instead of 30%.','Thornkeeper'),
- 'veyne':(attack('Close Quarters',26,'Physical',contact=True),0,'26 power instead of Steady Shot’s 22, but contact can trigger Thorn Coat retaliation.','Trailkeeper'),
- 'coil':(attack('Live Wire',28,'Magic',contact=True),0,'28 power instead of Spark Bolt’s 23, but contact can trigger Thorn Coat retaliation.','Stormkeeper'),
- 'bastion':(dict(name='Shield Wall',power=6,effect='guard',effect_amount=45,damage_type='Physical',contact=True),0,'Half the power of Shield Bash, but 45% guard instead of 30%. Contact risk remains.','Stonekeeper'),
- 'vesperfang':(attack('Night Flight',17,'Spirit'),1,'17 power instead of Night Fang’s 21; ranged contact safety avoids Thorn Coat retaliation.','Duskkeeper'),
- 'hushwing':(attack('Razor Gust',16,'Physical'),2,'16 power instead of Wing Buffet’s 20; ranged contact safety avoids Thorn Coat retaliation.','Moonkeeper'),
- 'riftclaw':(attack('Rift Dart',20,'Spirit'),0,'20 power instead of Rift Slash’s 24; ranged contact safety avoids Thorn Coat retaliation.','Riftkeeper'),
+# Every move is available immediately; no mastery or earned cosmetic rewards.
+PASSIVES = {
+ 'mage': ('transcription','Runic Transcription','Remember the last enemy non-Physical damaging spell you witness. Forbidden Script casts it once using your stats. Switching clears it.'),
+ 'sporestag': ('memory','Forest Memory','After surviving a direct hit, take 25% less damage from that exact move until another move hits you. Switching clears the memory.'),
+ 'glowmire': ('last_light','Last Light','Survive one otherwise lethal hit at 1 HP per battle. Follow the Lantern heals a reserve and switches to it.'),
+ 'bramblebelly': ('tangled','Tangled Ground','While active, enemy voluntary switches deal 6 damage to the departing character. Free replacements are safe.'),
+ 'veyne': ('trailblazer','Trailblazer','Gain +3 opening Speed when leading. Called Shot rewards predicting the exact enemy move; it does not protect you.'),
+ 'coil': ('conductive','Conductive Arc','Elemental attacks on the active enemy arc 20% of actual HP damage to the first living enemy reserve. Ground Fault does not arc.'),
+ 'bastion': ('hold_door','Hold the Door','When you voluntarily switch out, protect the incoming ally by at least 20% against its next hit, until after the enemy turn.'),
+ 'vesperfang': ('covenant','Twilight Covenant','Neither active character can heal while you are active. This also blocks your own healing and drain; reserves can still be healed.'),
+ 'hushwing': ('rhythm','Lulling Rhythm','The enemy cannot repeat its previous move while you are active. Encore reverses this for one enemy turn. Always leaves a playable action.'),
+ 'riftclaw': ('out_of_step','Out of Step','Direct hits while active become pending wounds. Pay them after your next action, including switching. Switching cannot erase the wound.'),
 }
+SPEEDS = dict(mage=8,sporestag=4,glowmire=9,bramblebelly=3,veyne=11,coil=7,bastion=2,vesperfang=6,hushwing=10,riftclaw=12)
+
+
+def special(name,mechanic):
+    return dict(name=name,effect='special',mechanic=mechanic)
+
+
+FOURTH_MOVES = {
+ 'mage':special('Forbidden Script','copy'),
+ 'sporestag':special('Shed the Husk','shed'),
+ 'glowmire':special('Follow the Lantern','escort'),
+ 'bramblebelly':attack('Drag Through the Thorns',8,'Physical',contact=True,mechanic='drag'),
+ 'veyne':special('Called Shot','called_shot'),
+ 'coil':attack('Ground Fault',14,'Elemental',mechanic='ground_fault'),
+ 'bastion':special('Relief Guard','relief'),
+ 'vesperfang':special('Nightfall','nightfall'),
+ 'hushwing':special('Encore','encore'),
+ 'riftclaw':special('Seal the Wound','seal'),
+}
+EXTRA_OPTIONS = {'mage': {'name': 'Rune Aegis',
+          'power': 6,
+          'effect': 'guard',
+          'effect_amount': 45,
+          'damage_type': 'Magic'},
+ 'sporestag': {'name': 'Bark Lance',
+               'power': 18,
+               'damage_type': 'Physical',
+               'contact': False,
+               'mechanic': ''},
+ 'glowmire': {'name': 'Beacon Aegis',
+              'power': 6,
+              'effect': 'guard',
+              'effect_amount': 45,
+              'damage_type': 'Magic'},
+ 'bramblebelly': {'name': 'Briar Aegis',
+                  'power': 6,
+                  'effect': 'guard',
+                  'effect_amount': 45,
+                  'damage_type': 'Spirit'},
+ 'veyne': {'name': 'Close Quarters',
+           'power': 26,
+           'damage_type': 'Physical',
+           'contact': True,
+           'mechanic': ''},
+ 'coil': {'name': 'Live Wire',
+          'power': 28,
+          'damage_type': 'Magic',
+          'contact': True,
+          'mechanic': ''},
+ 'bastion': {'name': 'Shield Wall',
+             'power': 6,
+             'effect': 'guard',
+             'effect_amount': 45,
+             'damage_type': 'Physical',
+             'contact': True},
+ 'vesperfang': {'name': 'Night Flight',
+                'power': 17,
+                'damage_type': 'Spirit',
+                'contact': False,
+                'mechanic': ''},
+ 'hushwing': {'name': 'Razor Gust',
+              'power': 16,
+              'damage_type': 'Physical',
+              'contact': False,
+              'mechanic': ''},
+ 'riftclaw': {'name': 'Rift Dart',
+              'power': 20,
+              'damage_type': 'Spirit',
+              'contact': False,
+              'mechanic': ''}}
+
+PLAYSTYLES.update({
+ 'mage':'Read the opponent: borrow a witnessed spell, then cast it with your own Focus.',
+ 'sporestag':'Adapt to repeated hits; shed conditions when survival matters more than resistance.',
+ 'glowmire':'Rescue teammates: survive once at 1 HP, then heal a reserve and guide it into battle.',
+ 'bramblebelly':'Disrupt positions: punish voluntary retreat and force an enemy replacement.',
+ 'veyne':'Lead quickly, then predict the exact enemy move to land a Called Shot.',
+ 'coil':'Pressure the whole formation with Elemental arcs or target a reserve directly.',
+ 'bastion':'Create safe entrances: guard first, then transfer protection to a teammate.',
+ 'vesperfang':'Deny recovery to both sides and strip away positive effects.',
+ 'hushwing':'Control the rhythm: prevent repeated moves or demand an Encore.',
+ 'riftclaw':'See the wound before it lands: attack, retreat, or use a turn to halve the damage.',
+})
 for character in ROSTER:
-    power,focus,armour,ward,recovery=PROFILES[character['id']]
-    character['stats']=dict(hp=character['maxHp'],power=power,focus=focus,armour=armour,ward=ward,recovery=recovery)
-    character['signatureMoves']=SIGNATURES[character['id']]
-    extra,compare,tradeoff,cosmetic=SIDEGRADES[character['id']]
-    character['playstyle']=PLAYSTYLES[character['id']]
-    character['lore']=LORE[character['id']]
-    character['mastery']=dict(moveIndex=6,moveAt=3,cosmeticAt=6,compareTo=compare,tradeoff=tradeoff,cosmetic=cosmetic)
-    character['movePool']=character['moves']+ALTERNATIVES[character['id']]+[extra]
+    identifier=character['id']
+    power,focus,armour,ward,recovery=PROFILES[identifier]
+    character['stats']=dict(hp=character['maxHp'],power=power,focus=focus,armour=armour,ward=ward,recovery=recovery,speed=SPEEDS[identifier])
+    passive,name,description=PASSIVES[identifier]
+    character['passive']=dict(id=passive,name=name,description=description)
+    displaced=character['moves'][3]
+    character['moves'][3]=FOURTH_MOVES[identifier]
+    character['signatureMoves']=[SIGNATURES[identifier][0],3]
+    character['playstyle']=PLAYSTYLES[identifier]
+    character['lore']=LORE[identifier]
+    # Preserve all six old choices; the displaced fourth remains an alternative.
+    character['movePool']=character['moves']+ALTERNATIVES[identifier]+[displaced,EXTRA_OPTIONS[identifier]]
+    for move in character['movePool']:
+        if identifier=='coil' and move.get('damage_type')=='Magic' or move['name']=='Ember Beam':
+            move['damage_type']='Elemental'
+    if identifier=='coil':
+        character['type']='Elemental'
 BY_ID = {character['id']: character for character in ROSTER}
