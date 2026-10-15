@@ -17,7 +17,15 @@ function escapeText(value) {
   return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 // Existing in-progress battles may still carry the older server wording.
-function moveDescription(move){return (move.description??'').replace(' / ranged.','.').replace(' / contact.','. Can trigger thorn retaliation.');}
+function moveDescription(move){
+  let text=(move.description??'').replace(' / ranged.','.').replace(' / contact.','.')
+    .replace(/Scales with (?:Focus|Power)\.\s*/g,'').replace(/Can trigger thorn retaliation\.\s*/g,'');
+  if(move.effect==='damage' && typeof move.contact==='boolean'){
+    const delivery=move.contact?'Contact: can trigger Thorn Coat retaliation.':'Ranged: avoids Thorn Coat retaliation.';
+    if(!text.includes(delivery))text+=` ${delivery}`;
+  }
+  return text;
+}
 function confusedMove(c, index) { return c.statuses?.some(s=>s.name==='confuse' && s.moveIndex===index); }
 function effectIndicators(c, player) {
   const statuses=c.statuses??[];

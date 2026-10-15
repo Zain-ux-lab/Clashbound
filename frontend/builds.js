@@ -6,8 +6,7 @@
  }
  function describeMove(m,stats){
   const parts=[];
-  if(m.power){parts.push(`${m.power} power · ${m.damage_type}`);parts.push(`Uses ${m.damage_type==='Physical'?'Power '+stats.power:'Focus '+stats.focus}`);}
-  if(m.contact)parts.push('Can trigger thorn retaliation');
+  if(m.power){parts.push(`${m.power} power · ${m.damage_type}`);parts.push(m.contact?'Contact: can trigger Thorn Coat retaliation':'Ranged: avoids Thorn Coat retaliation');}
   if(m.effect==='heal')parts.push(`Heals ${Math.floor(m.effect_amount*stats.recovery/10)} HP before the missing-health cap`);
   if(m.effect==='guard')parts.push(`${m.effect_amount}% protection against the next hit`);
   if(m.description)parts.push(m.description);

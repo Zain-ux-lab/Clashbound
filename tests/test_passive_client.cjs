@@ -34,3 +34,11 @@ test('passive state, full move explanations and opening reason are readable',asy
  assert.match(get('move-reference-copy').innerHTML,/Full explanation stays readable/);
  assert.match(get('initiative-message').textContent,/Lead Speed 12 vs 10/);
 });
+
+test('existing battle descriptions show contact consequences without redundant scaling text',async()=>{
+ const {context}=await setup();
+ const ranged=vm.runInContext(`moveDescription({effect:'damage',contact:false,description:'Magic / ranged. Scales with Focus. A direct attack.'})`,context);
+ assert.doesNotMatch(ranged,/Scales with|Uses Focus/);assert.match(ranged,/Ranged.*avoids Thorn Coat/);
+ const contact=vm.runInContext(`moveDescription({effect:'damage',contact:true,description:'Physical. Scales with Power. Can trigger thorn retaliation. A direct attack.'})`,context);
+ assert.doesNotMatch(contact,/Scales with/);assert.match(contact,/Contact.*can trigger Thorn Coat/);
+});
