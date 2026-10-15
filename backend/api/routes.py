@@ -101,7 +101,9 @@ def _move_view(creature: Creature, target: Creature, move: Move) -> dict:
     recoil = min(creature.current_hp + healed, recoil_damage(creature, target, move))
     delayed = min(10, target.current_hp - damage) if 'echo' in creature.statuses and creature.current_hp + healed > recoil else 0
     metadata['delayedDamage'] = delayed
-    description = f'{move.damage_type} / {"contact" if move.contact else "ranged"}. Scales with {"Power" if move.damage_type in {"Physical","Neutral"} else "Focus"}. '
+    description = f'{move.damage_type}. Scales with {"Power" if move.damage_type in {"Physical","Neutral"} else "Focus"}. '
+    if move.contact:
+        description += 'Can trigger thorn retaliation. '
     description += DESCRIPTIONS.get(move.mechanic, 'A direct attack.')
     if move.effect == 'guard':
         description += f' Grants {move.effect_amount}% protection against the next hit.'

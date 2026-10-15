@@ -16,6 +16,8 @@ const EFFECT_NAMES = {spores:'Spores',thorns:'Thorns',mark:'Marked',paralyse:'Pa
 function escapeText(value) {
   return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+// Existing in-progress battles may still carry the older server wording.
+function moveDescription(move){return (move.description??'').replace(' / ranged.','.').replace(' / contact.','. Can trigger thorn retaliation.');}
 function confusedMove(c, index) { return c.statuses?.some(s=>s.name==='confuse' && s.moveIndex===index); }
 function effectIndicators(c, player) {
   const statuses=c.statuses??[];
@@ -93,14 +95,14 @@ function render() {
   $('turn').textContent = state.winner!==null ? (state.winner===0?'YOU WIN':'BOT WINS') : disconnected ? 'CONNECTION LOST' : state.replacement===0 ? 'CHOOSE A REPLACEMENT' : state.player===1 ? 'BOT IS CHOOSING…' : busy ? 'RESOLVING TURN…' : 'YOUR TURN';
   $('action-label').textContent = state.winner!==null ? 'MATCH COMPLETE' : state.replacement===0 ? 'DEPLOY A RESERVE' : 'CHOOSE YOUR MOVE';
   const c = current();
-  $('moves').innerHTML = c.moves.map((m,i)=>`<button class="move ${confusedMove(c,i)?'confused-move':''}" style="--type:${TYPES[c.type]}" ${allowed('move',i)?'':'disabled'} data-move="${i}" title="${escapeText(m.blockedReason??m.description??'')}" ${confusedMove(c,i)?`aria-label="${escapeText(m.name)}, confused: causes 8 recoil"`:''}><span class="move-symbol">${m.symbol}</span>${m.name}${m.targets?.length?'<small>Choose a target</small>':''}${confusedMove(c,i)?'<small class="move-warning">Confused · 8 recoil</small>':''}</button>`).join('');
+  $('moves').innerHTML = c.moves.map((m,i)=>`<button class="move ${confusedMove(c,i)?'confused-move':''}" style="--type:${TYPES[c.type]}" ${allowed('move',i)?'':'disabled'} data-move="${i}" title="${escapeText(m.blockedReason??moveDescription(m))}" ${confusedMove(c,i)?`aria-label="${escapeText(m.name)}, confused: causes 8 recoil"`:''}><span class="move-symbol">${m.symbol}</span>${m.name}${m.targets?.length?'<small>Choose a target</small>':''}${confusedMove(c,i)?'<small class="move-warning">Confused · 8 recoil</small>':''}</button>`).join('');
   $('moves').querySelectorAll('button').forEach(button=>{
     const index=Number(button.dataset.move);
     button.onclick=()=>chooseMove(index);
     button.onmouseenter=()=>showDetails(index,button); button.onfocus=()=>showDetails(index,button);
     button.onmouseleave=scheduleHideDetails; button.onblur=scheduleHideDetails;
   });
-  if($('move-reference-copy'))$('move-reference-copy').innerHTML=c.moves.map(m=>`<p><strong>${escapeText(m.name)}</strong>${escapeText(m.description??'')}${m.blockedReason?`<em>${escapeText(m.blockedReason)}</em>`:''}</p>`).join('');
+  if($('move-reference-copy'))$('move-reference-copy').innerHTML=c.moves.map(m=>`<p><strong>${escapeText(m.name)}</strong>${escapeText(moveDescription(m))}${m.blockedReason?`<em>${escapeText(m.blockedReason)}</em>`:''}</p>`).join('');
   $('log').replaceChildren(...state.log.map(message=>{const li=document.createElement('li');li.textContent=message;return li;}));
   $('log').scrollTop=$('log').scrollHeight;
   const result=$('result-dialog');
@@ -128,7 +130,7 @@ function chooseMove(index){
   const move=current().moves[index];
   if(!move.targets?.length){sendAction('move',index);return;}
   $('target-title').textContent=move.name;
-  $('target-description').textContent=move.description;
+  $('target-description').textContent=moveDescription(move);
   $('target-options').innerHTML=move.targets.map(t=>`<button type="button" data-target="${t.index}">${escapeText(t.label)}</button>`).join('');
   $('target-options').querySelectorAll('button').forEach(button=>button.onclick=()=>sendAction('move',index,Number(button.dataset.target)));
   $('target-dialog').showModal();
@@ -139,8 +141,8 @@ function preview(index) {
   const label=move.effect==='heal'?'RECOVERY':move.effect==='guard'?'GUARD':move.effect==='special'?'ABILITY':'ATTACK';
   const value=move.effect==='guard'?`${move.amount}%`:move.effect==='damage'?(move.baseDamage??move.amount):move.amount;
   const unit=move.effect==='heal'?'HP restored':move.effect==='guard'?'next hit reduction':move.effect==='special'?'ability':'base damage';
-  const brief=(move.description??'').split('. ').find(t=>!t.includes(' / ')&&!t.includes('Scales with'))??'';
-  $('details').innerHTML=`<div class="detail-kicker">${escapeText(move.damageType??label)}</div><h3>${escapeText(move.name)}</h3><div class="damage">${value}<small>${unit}</small></div><p>${escapeText(move.description??brief)}${move.blockedReason?`<em>${escapeText(move.blockedReason)}</em>`:''}</p>${confusedMove(c,index)?'<small>Confused · 8 recoil</small>':''}`;
+  const brief=moveDescription(move).split('. ').find(t=>!t.includes(' / ')&&!t.includes('Scales with'))??'';
+  $('details').innerHTML=`<div class="detail-kicker">${escapeText(move.damageType??label)}</div><h3>${escapeText(move.name)}</h3><div class="damage">${value}<small>${unit}</small></div><p>${escapeText(moveDescription(move)||brief)}${move.blockedReason?`<em>${escapeText(move.blockedReason)}</em>`:''}</p>${confusedMove(c,index)?'<small>Confused · 8 recoil</small>':''}`;
 }
 function hideDetails() {
   clearTimeout(detailTimer); document.querySelector('.detail-panel').classList.remove('is-visible');
