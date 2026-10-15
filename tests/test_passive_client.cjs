@@ -35,10 +35,12 @@ test('passive state, full move explanations and opening reason are readable',asy
  assert.match(get('initiative-message').textContent,/Lead Speed 12 vs 10/);
 });
 
-test('existing battle descriptions show contact consequences without redundant scaling text',async()=>{
+test('existing battle descriptions omit generic delivery and scaling labels',async()=>{
  const {context}=await setup();
  const ranged=vm.runInContext(`moveDescription({effect:'damage',contact:false,description:'Magic / ranged. Scales with Focus. A direct attack.'})`,context);
- assert.doesNotMatch(ranged,/Scales with|Uses Focus/);assert.match(ranged,/Ranged.*avoids Thorn Coat/);
+ assert.doesNotMatch(ranged,/Scales with|Uses Focus/);assert.doesNotMatch(ranged,/Ranged|Thorn Coat/);
  const contact=vm.runInContext(`moveDescription({effect:'damage',contact:true,description:'Physical. Scales with Power. Can trigger thorn retaliation. A direct attack.'})`,context);
- assert.doesNotMatch(contact,/Scales with/);assert.match(contact,/Contact.*can trigger Thorn Coat/);
+ const newer=vm.runInContext(`moveDescription({effect:'damage',contact:false,description:'Magic. Ranged: avoids Thorn Coat retaliation. A direct attack.'})`,context);
+ assert.equal(newer,'Magic. A direct attack.');
+ assert.doesNotMatch(contact,/Scales with/);assert.doesNotMatch(contact,/Contact|Thorn Coat/);
 });

@@ -101,8 +101,7 @@ def _move_view(creature: Creature, target: Creature, move: Move) -> dict:
     recoil = min(creature.current_hp + healed, recoil_damage(creature, target, move))
     delayed = min(10, target.current_hp - damage) if 'echo' in creature.statuses and creature.current_hp + healed > recoil else 0
     metadata['delayedDamage'] = delayed
-    delivery='Contact: can trigger Thorn Coat retaliation.' if move.contact else 'Ranged: avoids Thorn Coat retaliation.'
-    description=f'{move.damage_type}. {delivery} '
+    description=f'{move.damage_type}. '
     description += DESCRIPTIONS.get(move.mechanic, 'A direct attack.')
     if move.effect == 'guard':
         description += f' Grants {move.effect_amount}% protection against the next hit.'
