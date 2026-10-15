@@ -4,6 +4,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from typing import Literal
 
+from backend.engine.passives import target_options
 from backend.engine.turn_engine import (
     BattleState,
     replace_knocked_out,
@@ -18,12 +19,15 @@ class Action:
 
     kind: Literal["move", "switch", "replace"]
     index: int
+    target: int | None = None
 
     def __post_init__(self) -> None:
         if self.kind not in {"move", "switch", "replace"}:
             raise ValueError("action kind must be move, switch, or replace")
         if not isinstance(self.index, int) or isinstance(self.index, bool):
             raise ValueError("action index must be an integer")
+        if self.target is not None and (isinstance(self.target,bool) or not isinstance(self.target,int) or self.target<0 or self.kind!="move"):
+            raise ValueError("target must be a nonnegative move target")
         if self.index < 0:
             raise ValueError("action index must not be negative")
 
@@ -45,7 +49,7 @@ def legal_actions(state: BattleState) -> tuple[Action, ...]:
         player = state.current_player
         active = state.active_creature(player)
         candidates = tuple(
-            [Action("move", index) for index in range(len(active.moves))]
+            [Action("move", index, target) for index,move in enumerate(active.moves) for target in target_options(state,player,move)]
             + [
                 Action("switch", index)
                 for index, creature in enumerate(state.team(player))
@@ -77,5 +81,5 @@ def _apply_action(state: BattleState, action: Action) -> BattleState:
         switch_active(state, action.index)
     else:
         move = state.active_creature(state.current_player).moves[action.index]
-        resolve_turn(state, move)
+        resolve_turn(state, move, action.target)
     return state

@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Clashbound · Play the bot</title>
   <link rel="stylesheet" href="style.css?v=9">
-  <script src="script.js?v=12" defer></script>
+  <script src="builds.js?v=4" defer></script>
+  <script src="script.js?v=19" defer></script>
+  <link rel="stylesheet" href="builds.css?v=1">
 <link rel="stylesheet" href="polish.css?v=5">
 <link rel="stylesheet" href="battle-layout.css?v=2"></head>
 <body>
   <main class="shell">
     <header class="topbar"><a class="brand" href="./index.html">CLASHBOUND</a><div class="location"><strong id="arena-name">BATTLE ARENA</strong> <span>Friendly battle</span></div><button id="restart" class="quiet">Settings ⚙</button></header>
-    <div class="demo-note"><span class="dot"></span> PLAY THE BOT <span>Ten characters · four moves each</span></div>
+    <p id="initiative-message" class="initiative-message" role="status"></p><div class="demo-note"><span class="dot"></span> PLAY THE BOT <span>Ten characters · four moves each</span></div>
     <section class="arena" aria-label="Colosseum battlefield">
       <div class="fighter-hud left" id="hud-0"></div><div class="fighter-hud right" id="hud-1"></div>
       <div class="turn-badge" id="turn" role="status"></div>
@@ -22,20 +24,22 @@
     <section class="console" aria-label="Battle controls">
       <div class="team-panel"><p class="eyebrow" id="team-label">YOUR TEAM</p><div id="roster" class="roster"></div><p class="team-hint">Select a reserve to switch.</p></div>
       <div class="actions-panel"><div class="section-title"><p class="eyebrow" id="action-label">CHOOSE YOUR MOVE</p><span id="turn-count"></span></div><div id="moves" class="moves"></div></div>
-      <aside class="detail-panel" aria-label="Move details"><div id="details"></div></aside>
+      <button type="button" id="move-reference-open" class="move-reference-open">Moves &amp; abilities</button><aside class="detail-panel" aria-label="Move details"><div id="details"></div></aside>
     </section>
     <div class="history"><span class="eyebrow">BATTLE LOG</span><ol id="log" aria-live="polite" aria-relevant="additions"></ol></div>
-    <footer><span>MAGIC <b>›</b> PHYSICAL <b>›</b> SPIRIT <b>›</b> MAGIC</span><span>Hover or focus a move to inspect</span></footer>
+    <footer><span>MAGIC <b>›</b> ELEMENTAL <b>›</b> PHYSICAL <b>›</b> SPIRIT <b>›</b> MAGIC</span><span>Hover or focus a move to inspect</span></footer>
     <div class="connection-notice"><p data-error role="alert" hidden></p><button id="retry" class="quiet" hidden>Retry connection</button></div>
   </main>
   <aside class="battle-orientation" aria-label="Landscape battle view"><img src="assets/homepage/clashbound-emblem.svg" alt=""><h1>Turn to battle.</h1><p>Rotate your phone sideways to keep both fighters, teams and moves in view. Your match stays saved.</p></aside>
+  <dialog id="move-reference" aria-labelledby="move-reference-title"><form method="dialog"><button class="close" aria-label="Close move guide">×</button></form><h2 id="move-reference-title">Moves &amp; abilities</h2><div id="move-reference-copy"></div></dialog>
+  <dialog id="target-dialog" aria-labelledby="target-title" aria-describedby="target-description"><form method="dialog"><button class="close" aria-label="Cancel target selection">×</button></form><h2 id="target-title"></h2><p id="target-description"></p><div id="target-options"></div></dialog>
   <dialog id="switch-dialog"><form method="dialog"><button class="close" aria-label="Close">×</button></form><p class="eyebrow" id="switch-label">CHANGE THE MATCHUP</p><h2 id="switch-title">Choose your next character</h2><p id="switch-description"></p><div id="switch-options"></div></dialog>
   <dialog id="team-dialog" aria-labelledby="team-title">
     <button id="team-cancel" class="close" aria-label="Return to battle" hidden>×</button>
     <p class="eyebrow">CHOOSE YOUR TEAM · SOLO BATTLE</p>
     <h2 id="team-title">Choose your three.</h2>
     <p>Your first pick leads. The bot draws three different characters after you lock in.</p>
-    <div id="team-options" class="team-options"></div><details id="custom-builds"><summary>Customise moves · optional</summary><p>Default builds are ready to play. Keep both signatures and choose two other moves.</p><div id="loadout-options"></div></details>
+    <p>Your first selected character leads. Faster lead Speed opens; tied leads compare total team Speed. Only an exact tie uses a draw. Turns then alternate.</p><div id="lead-options" class="lead-controls"></div><div id="team-options" class="team-options"></div><details id="custom-builds" open><summary>Build your team · compare &amp; swap moves</summary><p>Default builds are ready. Explore alternatives without deselecting first. All moves are available immediately. Each character has a passive ability and a unique fourth move.</p><div id="loadout-options"></div></details>
     <p class="prototype-note">Four moves per character. Use type matchups, signature abilities and switching to outplay the bot.</p>
     <p data-error role="alert" hidden></p>
     <button id="team-retry" class="quiet" hidden>Retry connection</button>

@@ -40,12 +40,14 @@ def calculate_damage(attacker: Creature, defender: Creature, move: Move) -> int:
     return damage
 
 
-def direct_damage(attacker: Creature, defender: Creature, move: Move) -> int:
+def direct_damage(attacker: Creature, defender: Creature, move: Move, *, cap_hp: bool = True) -> int:
     """Exact direct HP loss; used by resolution and API previews."""
     damage = calculate_damage(attacker, defender, move)
     if move.mechanic != 'phase':
         damage = damage * (100 - defender.guard_percent) // 100
-    return min(defender.current_hp, damage)
+    if defender.passive == 'memory' and defender.memory_move == move.name:
+        damage = damage * 75 // 100
+    return min(defender.current_hp, damage) if cap_hp else damage
 
 
 def recoil_damage(attacker: Creature, defender: Creature, move: Move) -> int:
@@ -53,7 +55,7 @@ def recoil_damage(attacker: Creature, defender: Creature, move: Move) -> int:
         return 0
     recoil = 6 if 'spores' in attacker.statuses else 0
     confused = attacker.statuses.get('confuse')
-    if confused and attacker.moves.index(move) == confused.slot:
+    if confused and move in attacker.moves and attacker.moves.index(move) == confused.slot:
         recoil += 8
     if move.contact and 'thorns' in defender.statuses and direct_damage(attacker, defender, move) > 0:
         recoil += 14

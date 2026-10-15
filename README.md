@@ -8,7 +8,7 @@ and use type matchups and signature abilities to win.
 
 **Stack:** Python / FastAPI backend; JavaScript, HTML and CSS frontend.
 **Mode:** single player against a deterministic tactical bot.
-**Demo:** local demo available; public hosting is pending.
+**Demo:** [Play Clashbound](https://clashbound.onrender.com/) (free Render instance; initial loading may take a minute).
 
 ![Colosseum arena artwork](frontend/assets/arenas/01-colosseum.png)
 
@@ -34,6 +34,16 @@ a restart clears them.
 See the [CV and interview pack](docs/CV_AND_PORTFOLIO.md) for a concise project
 entry, engineering evidence, a demo walkthrough and interview preparation.
 
+## Character abilities and opening Speed
+
+Humans and creatures form mixed Accord teams in a world shaped by the Fracture.
+The lore gives future arena interactions a foundation; arenas are currently visual only.
+Opening Speed compares the locked starting characters, then total team Speed on a tie. Only an exact tie uses an equal draw. Veyne receives +3 lead Speed. Normal turns still alternate.
+
+Every character has an automatic passive and a distinctive fourth move. Targeted moves let players choose a reserve character or predict an enemy move. The engine validates the same choices for the player and bot. All eight move options are available immediately: there are no mastery points, unlock gates or earned cosmetics. Old progress records are left untouched and unused.
+
+See the [battle guide](frontend/guide.html) for player explanations and [mechanics handoff](docs/CHARACTER_MECHANICS.md) for implementation details.
+
 ## Team
 
 - **Zain** — original concept, gameplay design, interface, tactical bot, character balance, and contributions to combat-engine and API integration.
@@ -51,11 +61,11 @@ homepage sound controls are included; further interface polish remains in progre
 - Three-character teams; the bot randomly draws three different characters.
 - One active character and one action per turn.
 - Each character has two fixed signature moves and two selectable moves from
-  four alternatives. Selections lock before combat. The bot gets legal builds too.
-- HP, Power, Focus, Armour, Ward and Recovery vary by character.
-- Physical moves scale with Power against Armour. Magic/Spirit moves use Focus
+  six alternatives. Selections lock before combat. The bot gets legal builds too.
+- HP, Power, Focus, Armour, Ward, Recovery and opening Speed vary by character.
+- Physical moves scale with Power against Armour. Magic/Elemental/Spirit moves use Focus
   against Ward. Contact is a separate property. Healing scales with Recovery.
-- Magic beats Physical; Physical beats Spirit; Spirit beats Magic.
+- Magic beats Elemental; Elemental beats Physical; Physical beats Spirit; Spirit beats Magic. Opposite types are neutral.
   Strong attacks deal 125%, resisted attacks 80%, same-type attacks 100%.
 - Deterministic statuses, healing, lifesteal, guard, delayed damage and counters.
 - Switching costs a turn and clears effects; knockout replacements are free.
