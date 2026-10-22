@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Clashbound · Character motion studies</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090e14;color:#e7e6dc;font:14px system-ui}main{max-width:1240px;margin:auto;padding:30px 24px}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}small{font-size:10px;letter-spacing:3px;color:#8c9ca9}h1{font-family:Georgia,serif;font-size:28px;font-weight:400;margin:8px 0}header span{color:#88bdc9;font-size:11px;letter-spacing:2px}canvas{display:block;width:100%;aspect-ratio:16/9;background:#111d29;border:1px solid #29343f}nav{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:20px 0}button,select{font:inherit;color:#dbe8e7;background:#17252d;border:1px solid #45606a;padding:12px 20px;cursor:pointer}button:hover{background:#23404b}button:disabled{opacity:.45;cursor:default}label{color:#9cabb5;font-size:12px}input{accent-color:#a8eced}#status{margin-left:auto;color:#a9dedc;font-size:11px;letter-spacing:2px}.note{border-top:1px solid #25313a;padding-top:16px;color:#7f929f;font-size:12px;line-height:1.7}b{font-weight:500;color:#b9c6cb}@media(max-width:650px){main{padding:16px}header span{display:none}nav{gap:12px}#status{width:100%;margin:0}}
+</style>
+<main><header><div><small>CLASHBOUND / CHARACTER MOTION LIBRARY</small><h1>Character motion studies</h1></div><span>A SPLINTER OF THE STAFF</span></header>
+<canvas id="scene" width="1280" height="720" aria-label="Mage fires a short cyan crystal bolt at Bastion in the Drowned Belfry"></canvas>
+<nav><select id="character" aria-label="Character"></select><select id="move" aria-label="Move"></select><button id="cast" disabled>Loading artwork…</button><button id="hold">Hold action pose</button><label><select id="speed" aria-label="Playback speed"><option value="1">Normal speed</option><option value="0.25">¼ speed · inspect motion</option></select></label><label><input id="loop" type="checkbox"> Repeat</label><span id="status" aria-live="polite">LOADING</span></nav>
+<div class="note"><b>120 ms gather · 140 ms flight · 260 ms impact & recovery.</b> Next action available at 550 ms; damage lands at contact.<br>Direction mockup for review. Existing approved artwork; individually drawn effect shapes. Illustrative damage, no game logic.</div></main>
+<script src="motion-data.js"></script>
+<script src="complete-effects.js"></script>
+<script src="action-poses.js"></script>
+<script>
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),cast=document.querySelector('#cast'),speed=document.querySelector('#speed'),loop=document.querySelector('#loop'),status=document.querySelector('#status');
+const move=document.querySelector('#move'),note=document.querySelector('.note');
+const chooser=document.querySelector('#character');const motionByKey=Object.fromEntries(MOTIONS.map(m=>[m.key,m]));
+const assets={};let started=0,active=false,ready=false,last=0,clock=0,repeatAt=Infinity,raf=0;
+const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>1-Math.pow(1-clamp(x),3);
+function poly(points,color,alpha=1){ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();ctx.globalAlpha=1}
+function diamond(x,y,w,h,color,a=1){poly([[x-w,y],[x,y-h],[x+w,y],[x,y+h]],color,a)}
+function character(img,x,y,h,flip=false,dx=0,dy=0,brightness=1){const w=h*img.width/img.height;ctx.save();ctx.translate(x+dx,y+dy);if(flip)ctx.scale(-1,1);ctx.filter=`brightness(${brightness})`;ctx.drawImage(img,-w/2,-h,w,h);ctx.restore()}
+function text(s,x,y,size,color,align='center'){ctx.font=`${size}px Georgia`;ctx.textAlign=align;ctx.fillStyle=color;ctx.fillText(s,x,y)}
+function bar(x,y,hp,name){poly([[x-67,y],[x+67,y],[x+71,y+10],[x-71,y+10]],'#070d13');ctx.fillStyle='#9a414c';ctx.fillRect(x-63,y+3,126*hp,4);text(name,x,y+31,12,'#a4b2bd')}
+function drawMage(t){
+ctx.clearRect(0,0,1280,720);ctx.drawImage(assets.arena,0,0,1280,720);ctx.fillStyle='#07101b55';ctx.fillRect(0,0,1280,720);
+const shade=ctx.createLinearGradient(0,480,0,720);shade.addColorStop(0,'#070c1200');shade.addColorStop(1,'#070c12ed');ctx.fillStyle=shade;ctx.fillRect(0,480,1280,240);
+const ward=move.value==='ward';const hit=!ward&&t>=260,ip=clamp((t-260)/260);const recoil=hit&&t<520?Math.sin(ip*Math.PI*2)*10*(1-ip):0;
+let mx=0;if(!ward&&t>=0&&t<120)mx=-3*Math.sin(t/120*Math.PI/2);else if(!ward&&t>=120&&t<300)mx=5*(1-ease((t-120)/180));
+character(assets.mage,360,592,420,false,mx);character(assets.bastion,895,592,414,true,recoil,0,!ward&&t>=260&&t<300?1.5:1);
+bar(345,610,1,'MAGE');bar(901,610,hit?1-.2*ease((t-260)/130):1,'BASTION');
+if(!ward){
+// All marks are authored polygons, with the staff's diamond as their common shape.
+const sx=462+mx,sy=249,tx=851,ty=407;
+if(t>=0&&t<150){const p=clamp(t/120),a=t<120?p:1-(t-120)/30;diamond(sx,sy,7+4*p,17+10*p,'#edffff',a);const r=27-17*p;poly([[sx-r-8,sy-12],[sx-r,sy-7],[sx-r-3,sy-1]],'#9ae4ee',a);poly([[sx+r+7,sy+10],[sx+r,sy+5],[sx+r+2,sy-1]],'#9ae4ee',a)}
+if(t>=120&&t<260){const p=(t-120)/140;const x=sx+(tx-sx)*p,y=sy+(ty-sy)*p;ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(ty-sy,tx-sx));poly([[-91,0],[-25,-5],[10,0],[-25,6]],'#62adc8',.45);poly([[-45,0],[-13,-9],[19,0],[-13,7]],'#8bd5e5');poly([[-22,0],[-8,-4],[19,0],[-8,3]],'#f0ffff');poly([[-62,-8],[-34,-6],[-52,-3]],'#9ddde7',.7);ctx.restore()}
+if(t>=260&&t<440){const p=(t-260)/180,a=1-p;ctx.save();ctx.translate(tx,ty);const s=.7+.7*ease(p);ctx.scale(s,s);poly([[-6,-7],[-18,-39],[4,-13],[20,-20],[11,-1],[39,12],[10,9],[1,30],[-6,12],[-29,15],[-14,1]],'#cefbff',a);poly([[-3,-13],[7,-3],[2,14],[-7,4]],'#ffffff',a);ctx.restore();
+const shards=[[-1,-.8,28,6],[-.3,-1,38,4],[.8,-.6,31,5],[1,.3,41,6],[.3,1,32,4],[-.7,.6,23,3]];
+for(const [vx,vy,d,size]of shards){const travel=13+d*ease(p),x=tx+vx*travel,y=ty+vy*travel;poly([[x,y-size],[x+size*.6,y],[x-2,y+size*1.6]],'#93d7e6',a)}}
+if(t>=260&&t<860){const p=(t-260)/600;ctx.globalAlpha=1-clamp((p-.65)/.35);ctx.save();ctx.translate(899,326-22*ease(p));const s=1+.18*(1-clamp(p*5));ctx.scale(s,s);ctx.strokeStyle='#0a1018';ctx.lineWidth=4;ctx.font='bold 30px Georgia';ctx.textAlign='center';ctx.strokeText('−16',0,0);ctx.fillStyle='#e4eee9';ctx.fillText('−16',0,0);ctx.restore();ctx.globalAlpha=1}
+}
+if(ward&&t>=0){drawWard(t/1.333333)}
+text('DROWNED BELFRY',640,49,12,'#7d909e');
+}
+const studies={bastion:{name:'Bastion',move:'Reprisal',tag:'WEIGHT · BRASS · BROKEN EDGES',duration:700,hit:327,color:'#e3b55f'},bramblebelly:{name:'Bramblebelly',move:'Bramble Bash',tag:'KNUCKLES · RUST · ROUGH BRUSHWORK',duration:800,hit:335,color:'#d98155'},hushwing:{name:'Hushwing',move:'Echo Strike',tag:'FIVE WINGS · LILAC · AFTERIMAGES',duration:700,hit:362,color:'#b5a0e5'}};
+function draw(t){if(!['bolt','ward','hushwing'].includes(move.value)){drawComplete(t,motionByKey[move.value]);return}const study=studies[move.value];if(!study){drawMage(t);return}drawStudy(t,study)}
+function drawStudy(t,c){
+const originalDuration=move.value==='bramblebelly'?550:600;t=t<0?t:t*originalDuration/c.duration;const impactTime=move.value==='bramblebelly'?230:move.value==='bastion'?280:310;
+ctx.clearRect(0,0,1280,720);ctx.drawImage(assets.arena,0,0,1280,720);ctx.fillStyle='#07101b66';ctx.fillRect(0,0,1280,720);
+const shade=ctx.createLinearGradient(0,500,0,720);shade.addColorStop(0,'#070c1200');shade.addColorStop(1,'#070c12');ctx.fillStyle=shade;ctx.fillRect(0,500,1280,220);
+const type=move.value,hit=t>=impactTime,p=clamp((t-impactTime)/(originalDuration-impactTime));let dx=0,dy=0;
+if(type==='bastion'&&t>=0){if(t<160)dx=-7*ease(t/160);else if(t<280)dx=-7+340*ease((t-160)/120);else dx=333*(1-ease((t-325)/275));}
+if(type==='bramblebelly'&&t>=0){if(t<100)dx=-12*ease(t/100);else if(t<230){dx=-12+355*ease((t-100)/130);dy=-14*Math.sin((t-100)/130*Math.PI)}else dx=343*(1-ease((t-275)/275));}
+const recoil=hit?Math.sin(p*Math.PI)* (type==='bastion'?22:12)*(1-p):0;
+character(assets[type],350,592,type==='hushwing'?345:420,false,dx,dy);
+character(assets.mage,905,592,420,true,recoil,0,hit&&t<impactTime+40?1.6:1);
+bar(345,610,1,c.name.toUpperCase());bar(901,610,hit?1-.18*ease((t-impactTime)/140):1,'MAGE');
+if(type==='bastion'){
+if(t>=140&&t<300){const a=Math.sin(clamp((t-140)/160)*Math.PI);line([[405+dx,353],[425+dx,381],[425+dx,445],[402+dx,472]],'#f3d28a',5,a);line([[271+dx,535],[248+dx,540],[225+dx,540]],'#a48c64',4,a*.6)}
+if(hit&&t<490){const a=1-clamp((t-280)/210);const q=ease((t-280)/210);for(const [vx,vy]of [[-1,-.8],[.2,-1],[1,-.3],[.8,.7]]){const x=822+vx*(12+27*q),y=404+vy*(12+27*q);poly([[x-6,y-5],[x+7,y-2],[x+4,y+6],[x-4,y+4]],c.color,a)}line([[802,370],[829,390],[819,409],[840,429]],'#fff0b8',5,a);}
+}
+if(type==='bramblebelly'){
+if(t>=130&&t<300){const a=1-clamp((t-230)/70);poly([[360+dx,390],[406+dx,363],[439+dx,381],[414+dx,407]],'#a85838',a*.5);line([[364+dx,402],[407+dx,386],[430+dx,390]],'#edb48b',5,a)}
+if(hit&&t<430){const a=1-clamp((t-230)/200),q=ease((t-230)/200);for(let i=0;i<3;i++){const y=385+i*14;line([[784-q*15,y+8],[816,y-4],[848+q*13,y-7]],i===1?'#f2d0a7':c.color,7-i,a)}for(const [x,y]of [[803,447],[833,459],[777,435]]){poly([[x,y+q*20],[x+7,y+5+q*20],[x+12,y+q*20],[x+4,y-5+q*20]],'#ac896d',a)}}
+}
+if(type==='hushwing'){
+if(t>=50&&t<490){for(let i=0;i<5;i++){const q=clamp((t-50-i*22)/180),a=clamp((t-50-i*22)/35)*(1-clamp((t-310-i*18)/110));const x=425+415*q,y=380+Math.sin(q*Math.PI)*(i-2)*25+(i-2)*16;
+line([[x-42,y+(i%2?8:-8)],[x-20,y],[x,y]],'#78619d',2,a*.5);
+ctx.save();ctx.translate(x,y);const flap=Math.sin((t/48)+i)*7;poly([[-24,-8-flap],[-14,-3],[-6,-8],[0,0],[6,-8],[14,-3],[24,-8-flap],[17,8],[7,5],[0,13],[-7,5],[-17,8]],i%2?'#bdaee8':'#7d6aac',a);ctx.restore()}}
+if(hit&&t<530){const a=1-clamp((t-310)/220);for(let i=0;i<2;i++){ctx.save();ctx.translate(838+i*13,399);ctx.scale(1+i*.3,1+i*.3);line([[-8,-32],[13,-20],[23,0],[13,20],[-8,32]],'#c5b5ee',3,a*(1-i*.3));ctx.restore()}}
+}
+if(hit&&t<impactTime+600){const n=clamp((t-impactTime)/600);ctx.save();ctx.globalAlpha=1-clamp((n-.65)/.35);text('−16',905,320-22*ease(n),30,'#ece9dd');ctx.restore()}
+text('DROWNED BELFRY',640,49,12,'#7d909e');
+}
+function line(points,color,width=2,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();ctx.restore()}
+function drawWard(t){
+const gather=clamp(t/95),lock=clamp((t-95)/105),fade=1-clamp((t-290)/160);
+if(t<180){diamond(462,249,5+3*gather,14+5*gather,'#ecffff',1-clamp((t-95)/85));}
+// Three differently angled panes fold inward, each closing with its own beat.
+const panes=[[[0,-91],[-42,-49],[-37,41],[0,81]],[[0,-91],[39,-47],[35,37],[0,81]],[[0,-67],[-23,-37],[-19,26],[0,57],[21,25],[25,-37]]];
+const cx=451,cy=407;
+for(let i=0;i<3;i++){const p=ease((t-65-i*24)/100),offset=(1-p)*(i===0?-40:i===1?40:0),sy=.5+.5*p;const pts=panes[i].map(([x,y])=>[cx+x+offset,cy+y*sy]);if(p>0){poly(pts,i===0?'#47788c':i===1?'#79bbce':'#b4e6ed',(.12+(i===2?.06:0))*fade);line([...pts,pts[0]],i===2?'#d6faff':'#85d5e6',i===2?2:3,p*fade)}}
+if(t>=170&&t<270){const p=(t-170)/100;line([[451,316],[451,488]],'#efffff',3,(1-p)*.9);diamond(451,407,5,15,'#f0ffff',1-p)}
+if(t>=200){const p=ease((t-200)/250);diamond(345,661,8,12,'#86c9d9',p*.8);diamond(345,661,4,7,'#101d28',p);line([[333,661],[337,661],[345,646],[353,661],[357,661]],'#bce5e9',1,p*.7)}
+}
+function updateMove(){if(!['bolt','ward','bastion','bramblebelly','hushwing'].includes(move.value)){cancelAnimationFrame(raf);active=false;const c=motionByKey[move.value];document.querySelector('h1').textContent=c.characterName+' · '+c.name;document.querySelector('header span').textContent=c.tag;cast.textContent='Play '+c.name;cast.disabled=!ready;status.textContent='READY';note.innerHTML='<b>'+c.duration+' ms · '+c.kind+' study.</b><br>Direction mockup · damage and outcomes are illustrative. Existing game mechanics are unchanged.';canvas.setAttribute('aria-label',c.characterName+' performs '+c.name);if(ready)draw(-1);return}if(studies[move.value]){cancelAnimationFrame(raf);active=false;const c=studies[move.value];document.querySelector('h1').textContent=c.name+' · '+c.move;document.querySelector('header span').textContent=c.tag;cast.textContent='Play '+c.move;cast.disabled=!ready;status.textContent='READY';note.innerHTML='<b>'+c.duration+' ms total · impact at '+c.hit+' ms.</b><br>Standalone motion study · illustrative damage. Choose another character above to compare.';canvas.setAttribute('aria-label',c.name+' performs '+c.move+' against Mage');if(ready)draw(-1);return}cancelAnimationFrame(raf);active=false;clock=-1;repeatAt=Infinity;const ward=move.value==='ward';document.querySelector('h1').textContent='Mage · '+(ward?'Arcane Ward':'Arcane Bolt');document.querySelector('header span').textContent=ward?'CRYSTAL FOLDED INTO GUARD':'A SPLINTER OF THE STAFF';cast.textContent='Cast '+(ward?'Arcane Ward':'Arcane Bolt');cast.disabled=!ready;status.textContent='READY';note.innerHTML=ward?'<b>127 ms gather · three facets snap shut · ready at 600 ms.</b><br>Arcane Ward · defensive motion study for approval. Faint diamond indicates the ward remains active.':'<b>120 ms gather · 140 ms flight · 260 ms impact & recovery.</b> Next action available at 550 ms; damage lands at contact.<br>Approved Arcane Bolt direction · illustrative damage.';canvas.setAttribute('aria-label',ward?'Mage folds three cyan crystal facets into a defensive ward':'Mage fires a cyan crystal bolt at Bastion');if(ready)draw(-1)}
+move.onchange=()=>{updateMove();play()};
+function play(){if(!ready||active)return;cancelAnimationFrame(raf);clock=0;last=performance.now();active=true;cast.disabled=true;repeatAt=Infinity;status.textContent='CASTING';raf=requestAnimationFrame(tick)}
+function tick(now){clock+=(now-last)*Number(speed.value);last=now;draw(clock);if(clock>=(studies[move.value]?.duration??motionByKey[move.value]?.duration??600)&&active){active=false;cast.disabled=false;status.textContent='READY · '+((studies[move.value]?.duration??motionByKey[move.value]?.duration??600)/1000)+' s';repeatAt=clock+1200}if(clock<1300||loop.checked){if(loop.checked&&clock>=repeatAt){play();return}raf=requestAnimationFrame(tick)}}
+function chooseCharacter(){move.replaceChildren();for(const m of MOTIONS.filter(m=>m.character===chooser.value)){const option=document.createElement('option');option.value=m.key;option.textContent=m.name;move.append(option)}updateMove();if(ready)play()}
+for(const c of [...new Map(MOTIONS.map(m=>[m.character,m])).values()]){const option=document.createElement('option');option.value=c.character;option.textContent=c.characterName;chooser.append(option)}chooser.onchange=chooseCharacter;chooseCharacter();
+document.querySelector('#hold').onclick=()=>{cancelAnimationFrame(raf);active=false;cast.disabled=false;loop.checked=false;const duration=studies[move.value]?.duration??motionByKey[move.value]?.duration??600;draw(duration*.46);status.textContent='ACTION POSE · PAUSED'};
+cast.onclick=play;loop.onchange=()=>{if(loop.checked&&!active)play()};
+Promise.all(Object.entries({mage:'mage.png',bastion:'bastion.png',bramblebelly:'bramblebelly.png',hushwing:'hushwing.png',sporestag:'sporestag.png',glowmire:'glowmire.png',veyne:'veyne.png',coil:'coil.png',vesperfang:'vesperfang.png',riftclaw:'riftclaw.png',arena:'drowned-belfry.svg'}).map(([key,file])=>new Promise((resolve,reject)=>{const im=new Image;im.onload=()=>{assets[key]=im;resolve()};im.onerror=reject;im.src='assets/'+file}))).then(()=>{ready=true;cast.disabled=false;updateMove();play()}).catch(()=>{status.textContent='ARTWORK FAILED TO LOAD'});
+</script></html>

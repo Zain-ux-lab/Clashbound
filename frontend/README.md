@@ -138,3 +138,10 @@ when unusually long feedback needs more space. Individual body proportions,
 foot anchors and shadows remain attached to the fighters. On portrait phones,
 a rotation prompt asks for landscape; rotating preserves the current match.
 The gameplay clip has been recorded again with this layout.
+
+## Standalone character animation review
+
+Open `/previews/character-motion/` for the isolated ten-character animation mockup.
+It includes 80 move studies, repeat/slow playback and a held action pose.
+See `previews/character-motion/README.md` for review limits and source files.
+The game battle screen continues to use its existing presentation.
