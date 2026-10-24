@@ -1,75 +1,18 @@
-CLASHBOUND — BATTLE RULES
-Updated: 6 October 2026
+CLASHBOUND — CURRENT BATTLE RULES
+Updated 14 October 2026
 
-PURPOSE
-Record the current battle rules and keep unresolved design choices separate.
-This document takes precedence over older proposals for simultaneous move
-selection in the README and starter-code comments.
+Choose three different characters and four moves each; both teams lock before reveal. First pick is the lead. Each side fields one active character.
 
-1. TEAM SELECTION
-- A match has two players.
-- Each player selects three different characters from the ten-character roster.
-- Both teams are locked in before the battle starts.
+Opening: higher lead Speed (+3 for Veyne) goes first. Tied leads compare total base team Speed. Only an exact tie uses an equal draw. Thereafter players alternate; Speed never adds turns.
 
-2. TEAM REVEAL
-- The playable single-player prototype reveals both teams when the battle
-  begins.
-- Revealing the team does not reveal future actions.
+Each normal turn uses one move or voluntarily switches. Switching uses the whole turn. A knockout replacement is free and preserves normal turn order. Drag Through the Thorns forces a free defender-choice replacement and also preserves their normal turn.
 
-3. ACTIVE CHARACTERS
-- Each player fields one active character at a time.
-- Their other two characters begin in reserve.
-- Combat is one active character against one active character.
+Each character has an automatic passive, a unique fourth move and one other fixed signature. Choose two flexible moves from the remaining options. All eight moves per character are immediately available. No mastery, progression unlocks or earned cosmetics.
 
-4. TURNS AND ACTIONS
-- Players take alternating turns.
-- A player takes one action on their turn: use a move or voluntarily switch.
-- The prototype has the human move first.
-- The bot responds automatically after the human action.
+Types: Magic > Elemental > Physical > Spirit > Magic. Strong attacks deal 125%; reverse 80%; equal/opposite 100%. Physical uses Power/Armour; others use Focus/Ward. Contact is independent of damage type.
 
-5. CHARACTER MOVES AND TYPES
-- Each character keeps two signature moves and chooses two alternatives from
-  four options before battle. The four selected moves lock for the match.
-- HP, Power, Focus, Armour, Ward and Recovery vary by character.
-- Physical attacks scale with Power against Armour; Magic/Spirit attacks scale
-  with Focus against Ward. Recovery scales healing. Contact is independent.
-- Definitions and initial stats are in backend/roster.py.
-- Magic beats Physical; Physical beats Spirit; Spirit beats Magic.
-- Strong attacks deal 125% damage; resisted attacks deal 80%; same type is neutral.
-- Move type, not the user's character type, determines the matchup.
-- Signature effects, exact durations, numbers and resolution order are documented
-  in docs/superpowers/specs/2026-10-04-character-identities-design.md.
-- Conditions are deterministic. Offensive statuses deal a small initial hit.
-- No energy, cooldowns, random turn skips, speed order or move priority.
+Conditions, guard and passive state are visible. Ordinary switching clears conditions, copied spells, adaptation and previous-move restrictions. Pending wounds remain attached to Riftclaw and pay after its next normal action even if it switches. Glowmire's Last Light is once per battle.
 
-6. VOLUNTARY SWITCHING
-- On their turn, a player may switch to another non-knocked-out character on
-  their team.
-- Switching uses the player's turn; the player cannot also use a move.
-- Switching clears temporary effects and guard; paralysis blocks voluntary
-  switching for one action but never blocks free knockout replacement.
+A team loses when all three characters are knocked out. Simultaneous final knockouts do not reward the actor for sacrificing their final character. Reserve damage may knock out reserves without forcing an active replacement.
 
-7. KNOCKOUTS AND FREE REPLACEMENT
-- A character is knocked out when its health reaches zero and cannot continue
-  fighting or be selected as a replacement.
-- If the active character is knocked out and the player has eligible reserves,
-  that player chooses which reserve to deploy.
-- This forced replacement is free and does not consume a turn.
-- After replacement, normal turn order continues.
-
-8. VICTORY
-- A player wins when all three opposing characters have been knocked out.
-- If both final characters fall in the same action, the acting player loses.
-- If the defeated player has no eligible replacement, the match ends.
-
-9. DECISIONS STILL TO MAKE
-- Final balancing of character attributes, move values, healing amounts, and
-  guard strength after playtesting.
-- Whether further move effects belong in later releases.
-- Rules for disconnects, inactivity, surrender, and any possible draw.
-- Multiplayer turn synchronization and persistent session storage.
-
-IMPLEMENTATION NOTE
-The current browser prototype uses alternating turns and a server-authoritative
-battle API. The repository's README includes historical proposals; follow the
-current playable rules documented here for battle behavior.
+Exact abilities, starting numbers, timing, target choices and healing rules: frontend/guide.html and docs/CHARACTER_MECHANICS.md. Numbers remain provisional. There is no story campaign.

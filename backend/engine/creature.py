@@ -24,7 +24,20 @@ class Creature:
     ward: int | None = None
     recovery: int = 10
 
+    passive: str = ""
+    speed: int = 10
+    recorded_spell: Move | None = None
+    memory_move: str | None = None
+    last_move: str | None = None
+    last_light_used: bool = False
+    called_move: str | None = None
+    encore_move: str | None = None
+    pending_damage: int = 0
+    temporary_guard: bool = False
+
     def __post_init__(self) -> None:
+        if isinstance(self.speed, bool) or not isinstance(self.speed, int) or self.speed < 0:
+            raise ValueError("speed must be a nonnegative integer")
         self.focus = self.attack if self.focus is None else self.focus
         self.ward = self.defense if self.ward is None else self.ward
         if self.focus < 0 or self.ward <= 0 or self.recovery <= 0:

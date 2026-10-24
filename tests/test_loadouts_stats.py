@@ -18,7 +18,7 @@ def test_focus_ward_and_power_armour_scale_separately():
 def test_custom_loadouts_are_locked_validated_and_persisted():
     with TestClient(app) as client:
         roster=client.get('/api/roster').json()
-        assert all(len(c['movePool'])==6 and len(c['signatureMoves'])==2 for c in roster)
+        assert all(len(c['movePool'])==8 and len(c['signatureMoves'])==2 for c in roster)
         picks=['mage','sporestag','glowmire']
         selected={c:BY_ID[c]['signatureMoves']+[4,5] for c in picks}
         response=client.post('/api/battle',json={'roster':picks,'loadouts':selected})
@@ -26,7 +26,7 @@ def test_custom_loadouts_are_locked_validated_and_persisted():
         state=response.json()['state']
         for c in state['teams'][0]:
             assert [m['name'] for m in c['moves']]==[BY_ID[c['id']]['movePool'][i]['name'] for i in selected[c['id']]]
-            assert set(c['stats'])=={'hp','power','focus','armour','ward','recovery'}
+            assert set(c['stats'])=={'hp','power','focus','armour','ward','recovery','speed'}
         assert client.get('/api/battle').json()['state']==state
         for invalid in ([0,0,1,2],[0,1,2,99],[True,1,2,3],[0,1,4,5]):
             r=client.post('/api/battle',json={'roster':picks,'loadouts':{'mage':invalid}})
@@ -41,7 +41,11 @@ def test_attack_feedback_has_name_and_exact_hp_delta():
         frame=data['frames'][0]
         assert frame['animation']['moveName']=='Arcane Bolt'
         loss=s['teams'][1][0]['hp']-frame['teams'][1][0]['hp']
-        assert any(x['player']==1 and x['amount']==-loss for x in frame['animation']['hpChanges'])
+        if loss:
+            assert any(x['player']==1 and x['slot']==0 and x['amount']==-loss for x in frame['animation']['hpChanges'])
+        else:
+            assert frame['teams'][1][0]['passiveState']['pendingDamage']>0
+            assert not any(x['player']==1 and x['slot']==0 for x in frame['animation']['hpChanges'])
 
 
 def test_recovery_stat_scales_heal_and_has_no_attack_announcement():

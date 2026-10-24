@@ -18,7 +18,7 @@ def battle(move, target_move=None):
 
 
 def test_type_cycle_and_neutral_legacy_damage():
-    for attack_type, target_type, expected in [('Magic','Physical',25),('Magic','Spirit',16),('Magic','Magic',20),('Neutral','Physical',20)]:
+    for attack_type, target_type, expected in [('Elemental','Physical',25),('Magic','Physical',20),('Magic','Spirit',16),('Magic','Magic',20),('Neutral','Physical',20)]:
         move = Move('Hit',20,damage_type=attack_type)
         s = battle(move)
         s.active_creature(1).battle_type = target_type
@@ -172,7 +172,7 @@ def test_final_double_ko_awards_defender_not_suicide_attacker():
 
 
 def test_offensive_status_deals_typed_damage_then_applies_condition():
-    move=Move('Static Lock',10,effect='status',mechanic='paralyse',damage_type='Magic')
+    move=Move('Static Lock',10,effect='status',mechanic='paralyse',damage_type='Elemental')
     s=battle(move)
     s.active_creature(1).battle_type='Physical'
     assert resolve_turn(s,move).damage==12

@@ -14,7 +14,7 @@ def creature(name, move, **kwargs):
 def test_base_preview_stays_constant_across_types_guard_and_low_hp():
     move = Move('Bolt', 20, damage_type='Magic')
     actor = creature('Actor', move)
-    for kind, expected in [('Physical',25),('Spirit',16),('Magic',20)]:
+    for kind, expected in [('Physical',20),('Elemental',25),('Spirit',16),('Magic',20)]:
         target = creature('Target', Move('Hit',20), battle_type=kind)
         preview = _move_view(actor,target,move)
         assert preview['baseDamage'] == 20
@@ -38,8 +38,8 @@ def test_siphon_quarter_healing_capped_and_based_on_actual_hp_loss(damage,hp,hea
 
 
 def test_every_roster_guard_hits_and_protects_next_attack():
-    guards=[(c,m) for c in ROSTER for m in c['moves'] if m.get('effect')=='guard']
-    assert len(guards)==4
+    guards=[(c,m) for c in ROSTER for m in c['movePool'] if m.get('effect')=='guard' and m.get('effect_amount')==30]
+    assert len(guards)==8
     for c, definition in guards:
         move=Move(**definition)
         assert move.power==12 and move.effect_amount==30

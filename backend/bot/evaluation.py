@@ -60,7 +60,7 @@ def play_match(fixture, baseline, first_player, seed, max_actions):
             stats = entry['stats']
             creatures.append(Creature(entry['name'], entry['maxHp'], stats['power'], stats['armour'],
                 tuple(Move(**entry['movePool'][i]) for i in selected['moves']),
-                battle_type=entry['type'], focus=stats['focus'], ward=stats['ward'], recovery=stats['recovery']))
+                battle_type=entry['type'], focus=stats['focus'], ward=stats['ward'],recovery=stats['recovery'],speed=stats['speed'],passive=entry['passive']['id']))
         teams.append(creatures)
     state = BattleState(*teams, current_player=first_player)
     rng = random.Random(seed)

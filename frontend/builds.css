@@ -1,0 +1,33 @@
+/* Build information stays in the picker; combat keeps its existing composition. */
+#team-dialog .playstyle{font-size:15px;color:#263f50;line-height:1.5;margin:8px 0 12px}
+#team-dialog .loadout{background:#fffaf0;border:1px solid #d4c8ae;border-radius:14px;padding:18px;margin:16px 0;text-align:left}
+#team-dialog .loadout h4{color:#263f50;font-size:16px;margin:20px 0 8px}
+#team-dialog .loadout small{display:block;font-size:13px;line-height:1.5;color:#405266;margin:6px 0}
+#team-dialog .loadout .equipped-moves,#team-dialog .loadout .alternative-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#team-dialog .build-move{border:1px solid #d7cfbf;border-radius:10px;padding:12px;background:#f7f0e1}
+#team-dialog .build-move>span{font-size:12px;color:#4c655e}
+#team-dialog .build-move button,#team-dialog .swap-comparison button{font:inherit;border:1px solid #607c71;border-radius:9px;background:#fffaf0;color:#25473b;padding:9px 12px;cursor:pointer}
+#team-dialog .build-move button:hover,#team-dialog .swap-comparison button:hover{background:#e7efe7}
+#team-dialog .build-move button:focus-visible,#team-dialog .swap-comparison button:focus-visible{outline:3px solid #537da3;outline-offset:3px}
+#team-dialog .build-move button:disabled{cursor:default;border-color:#aba596;color:#6b665c;background:#e9e3d6}
+
+#team-dialog .swap-hint{font-size:13px;color:#3b514c}
+#team-dialog .swap-comparison{display:block;padding:14px;border:2px solid #658371;border-radius:12px;margin-top:16px;background:#edf3e9}
+#team-dialog .swap-comparison button{display:block;width:100%;text-align:left;margin:10px 0}
+#team-dialog .tradeoff{color:#70512a}
+
+
+@media(max-width:600px){#team-dialog .loadout .equipped-moves,#team-dialog .loadout .alternative-moves{grid-template-columns:1fr}}
+
+.initiative-message{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:6;background:#f6f0e6ed;color:#334e48;border-radius:20px;padding:7px 12px;margin:0;font:13px Barlow,sans-serif;pointer-events:none}
+@media(max-height:450px){.initiative-message{top:9px;font-size:10px;padding:5px 9px}}
+
+.character-build{border:1px solid #d4c8ae;border-radius:12px;background:#fffaf0;margin:12px 0}.character-build>summary{cursor:pointer;padding:14px 16px;font-weight:600;color:#29483e}.character-build>summary:focus-visible{outline:3px solid #537da3;outline-offset:2px}#team-dialog .character-build .loadout{border:0;margin:0;padding-top:0}#team-dialog button:disabled{cursor:default;opacity:.55}
+
+.passive-info{font-size:13px;line-height:1.45;margin-top:5px}.passive-info summary{cursor:pointer}.passive-info p{margin:5px 0}.passive-state{display:block;color:#405266}
+#move-reference{background:#fffaf0;color:#263f50;padding:24px;border-radius:12px;width:min(600px,90vw);max-height:85vh;overflow:auto}.move-reference-open{position:fixed;top:52px;left:50%;transform:translateX(-50%);z-index:6;padding:7px 12px;border:1px solid #d4c8ae;border-radius:14px;background:#fffaf0;color:#263f50;font:13px Barlow,sans-serif;cursor:pointer}#move-reference p{font-size:14px;line-height:1.5}#move-reference strong{display:block}
+#target-dialog{max-width:480px}#target-options button{display:block;width:100%;padding:14px;margin:10px 0;text-align:left;font:inherit;cursor:pointer}#target-description{line-height:1.5}
+.detail-panel{max-height:55vh!important;overflow:auto!important}.detail-panel p{font-size:13px!important;line-height:1.45}
+.lead-controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.lead-controls button{padding:8px;font:inherit;cursor:pointer}
+
+@media(max-height:450px){.move-reference-open{top:35px;font-size:10px;padding:5px 9px}}
