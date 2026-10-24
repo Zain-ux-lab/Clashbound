@@ -44,3 +44,29 @@ test('existing battle descriptions omit generic delivery and scaling labels',asy
  assert.equal(newer,'Magic. A direct attack.');
  assert.doesNotMatch(contact,/Scales with/);assert.doesNotMatch(contact,/Contact|Thorn Coat/);
 });
+
+test('team cards describe special abilities without inventing attack power',async()=>{
+ const {context,get}=await setup();
+ vm.runInContext(`catalog=[{id:'mage',name:'Mage',type:'Magic',maxHp:100,moves:[{name:'Forbidden Script',effect:'special',description:'Cast a recorded spell.'}]}];renderChoices();`,context);
+ assert.doesNotMatch(get('team-options').innerHTML,/undefined|NaN/);
+ assert.match(get('team-options').innerHTML,/Forbidden Script · ability/);
+});
+
+test('formation-changing effects do not animate the new fighter as the old actor',async()=>{
+ const {context}=await setup();
+ context.effects=[];
+ context.setTimeout=callback=>{callback();return 0;};
+ vm.runInContext(`playMoveEffect=animation=>effects.push(animation);state.active=[1,0];`,context);
+ await vm.runInContext(`presentFrames([{...state,animation:{kind:'special',actor:0,actorSlot:0}}])`,context);
+ assert.equal(context.effects.length,0);
+ await vm.runInContext(`presentFrames([{...state,animation:{kind:'heal',actor:0,actorSlot:1}}])`,context);
+ assert.equal(context.effects.length,1);
+});
+
+test('passive state text contrasts with the cream health panel',()=>{
+ const css=readFileSync(new URL('../frontend/builds.css',`file://${__filename}`),'utf8');
+ const color=css.match(/\.passive-state\{[^}]*color:(#[0-9a-f]{6})/i)[1];
+ const luminance=hex=>{const rgb=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
+ const values=[luminance(color),luminance('#e9e6d4')].sort((a,b)=>b-a);
+ assert.ok((values[0]+.05)/(values[1]+.05)>=4.5,`Unreadable passive color ${color}`);
+});

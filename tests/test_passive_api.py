@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from backend.main import app
 from backend.api import routes
 from backend.engine.initiative import opening_initiative
+from backend.bot.adapter import Action
 
 
 def test_roster_explains_every_passive_and_has_no_progression_gates():
@@ -30,6 +31,21 @@ def test_targeted_move_requires_explicit_target_and_rejects_bad_target_atomicall
         f=r.json()['frames'][0]
         assert f['active'][0]==1 and f['player']==1
         assert f['animation']['moveName']=='Follow the Lantern'
+        assert 'targetSlot' not in f['animation']
+
+
+def test_healing_animation_does_not_target_the_opponents_slot():
+    with TestClient(app) as c:
+        c.post('/api/battle',json={'roster':['coil','mage','bastion'],
+            'loadouts':{'mage':[0,6,2,3],'bastion':[0,4,2,3]}})
+        match=routes._matches[c.cookies.get(routes.COOKIE)]
+        match.battle.active_indices[0]=2
+        match.battle.current_player=0
+        match.battle.active_creature(0).current_hp-=20
+        frame=routes._advance(match,Action('move',1))
+        assert frame['animation']['kind']=='heal'
+        assert frame['animation']['actorSlot']==2
+        assert 'targetSlot' not in frame['animation']
 
 
 def test_speed_initiative_is_published_and_uses_locked_lead(monkeypatch):

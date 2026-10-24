@@ -233,10 +233,12 @@ def _advance(match: Match, action: Action) -> dict:
         damaging=move.power>0 or move.mechanic=='copy'
         frame['animation']=dict(kind='attack' if damaging else move.effect,actor=player,
                                moveName=move.name if move.effect!='heal' else None,
-                               actorSlot=old_indices[player],targetSlot=action.target if move.mechanic=='ground_fault' else old_indices[1-player])
+                               actorSlot=old_indices[player])
         frame['animation']['hpChanges']=[dict(player=p,slot=i,amount=c.current_hp-before_hp[p][i])
             for p in (0,1) for i,c in enumerate(match.battle.team(p)) if c.current_hp!=before_hp[p][i]]
-        if damaging:frame['animation']['target']=1-player
+        if damaging:
+            frame['animation']['target']=1-player
+            frame['animation']['targetSlot']=action.target if move.mechanic=='ground_fault' else old_indices[1-player]
     return frame
 
 

@@ -60,7 +60,9 @@ Leave automatic reload off while playtesting: battles live in server memory,
 and restarting the server ends active battles. Restart manually after backend edits.
 
 Pick three different characters. Selection order determines your starting
-character; you move first. The bot randomly draws three of the remaining seven.
+character; you can change the lead before locking in. Higher lead Speed opens,
+then total team Speed breaks a lead tie. Only an exact tie uses an equal draw.
+Normal turns alternate. The bot draws three of the remaining seven.
 Both rosters are revealed when the battle begins. Hover or focus a move to
 see its damage, healing, or guard preview. Switching uses a turn. Replacing a
 knocked-out character is free. The human always stays on the near side.
@@ -78,8 +80,8 @@ no accounts, persistent saves, or online multiplayer.
 ## Battle UI integration — 6 October 2026
 
 - Choose three characters and enter immediately with default four-move builds.
-  Open **Customise moves** to choose two alternatives alongside the two locked
-  signatures. Detailed stats remain behind an expandable section.
+  Open **Build your team · compare & swap moves** to choose two alternatives
+  alongside the two locked signatures. Every character has eight available choices. Detailed stats remain behind an expandable section.
 - Both active characters display effect names and remaining holder actions beside
   HP. Open the labels for descriptions. Confusion identifies the affected move
   and warns that it causes eight recoil. Paralysis explains blocked switching.
@@ -92,8 +94,9 @@ no accounts, persistent saves, or online multiplayer.
 
 ## Current limits
 
-Balance remains provisional. Six stats scale moves, and type advantages are
-implemented: Magic beats Physical, Physical beats Spirit, Spirit beats Magic.
+Balance remains provisional. Stats scale moves, and opening Speed decides the
+first action. The four-type cycle is Magic → Elemental → Physical → Spirit → Magic.
+The next type takes 125% damage; the reverse takes 80%; equal/opposite types take 100%.
 Artwork is static with CSS combat animations. No character limb rigging, energy,
 cooldowns, progression, accounts or online multiplayer are included.
 The homepage video is a recording of a real match; Play now opens the live game.
@@ -138,3 +141,10 @@ when unusually long feedback needs more space. Individual body proportions,
 foot anchors and shadows remain attached to the fighters. On portrait phones,
 a rotation prompt asks for landscape; rotating preserves the current match.
 The gameplay clip has been recorded again with this layout.
+
+## PR #30 integration review · 24 October 2026
+
+The build screen includes passive descriptions, a locked fourth signature move,
+explicit target selection and opening Speed explanations. All moves are available
+immediately; mastery rewards and earned crests from PR #29 are superseded.
+The move reference button is labelled **Moves & abilities**.

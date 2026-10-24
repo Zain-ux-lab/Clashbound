@@ -180,7 +180,8 @@ async function presentFrames(frames) {
     for (let i=0;i<frames.length;i++) {
       const frame=frames[i];
       state=frame;render();
-      if(frame.animation && (frame.animation.targetSlot===undefined || frame.animation.targetSlot===state.active[frame.animation.target??frame.animation.actor]) && typeof document.createElement==='function') playMoveEffect(frame.animation,null);
+      const actorVisible=frame.animation?.actorSlot===undefined || frame.animation.actorSlot===state.active[frame.animation.actor];
+      if(frame.animation && actorVisible && (frame.animation.targetSlot===undefined || frame.animation.targetSlot===state.active[frame.animation.target??frame.animation.actor]) && typeof document.createElement==='function') playMoveEffect(frame.animation,null);
 
       if (frame.animation?.moveName) {
         const name=document.createElement('div');name.className='move-announcement';
@@ -197,13 +198,13 @@ async function presentFrames(frames) {
         number.textContent=`${change.amount>0?'+':''}${change.amount}`;
         $(`fighter-${change.player}`).append(number);number.style.setProperty('--hp-display-time', `${FRAME_READ_MS}ms`);setTimeout(()=>number.remove(),FRAME_READ_MS);
       }
-      if (frame.animation?.kind==='attack' && (frame.animation.targetSlot===undefined || frame.animation.targetSlot===state.active[frame.animation.target])) {
+      if (frame.animation?.kind==='attack' && actorVisible && (frame.animation.targetSlot===undefined || frame.animation.targetSlot===state.active[frame.animation.target])) {
         const attacker=$(`fighter-${frame.animation.actor}`), target=$(`fighter-${frame.animation.target}`);
         attacker.classList.remove('attack-animation'); target.classList.remove('hit-animation');
         void attacker.offsetWidth;
         attacker.classList.add('attack-animation'); target.classList.add('hit-animation');
         setTimeout(()=>{attacker.classList.remove('attack-animation');target.classList.remove('hit-animation');},460);
-      } else if (frame.animation?.kind==='heal' || frame.animation?.kind==='guard') {
+      } else if (actorVisible && (frame.animation?.kind==='heal' || frame.animation?.kind==='guard')) {
         const fighter=$(`fighter-${frame.animation.actor}`), animation=`${frame.animation.kind}-animation`;
         fighter.classList.remove(animation);
         void fighter.offsetWidth;
@@ -241,7 +242,7 @@ function renderChoices() {
   const choice=c=>{
     const rank=selection.indexOf(c.id);
     const featured=c.moves.find(m=>m.effect)||c.moves[0];
-    const strength=featured.effect==='guard'?`${featured.power} power · ${featured.effect_amount}% guard`:featured.effect==='heal'?`heal ${featured.effect_amount} HP`:`${featured.power} power`;
+    const strength=featured.effect==='special'?'ability':featured.effect==='guard'?`${featured.power??0} power · ${featured.effect_amount}% guard`:featured.effect==='heal'?`heal ${featured.effect_amount} HP`:`${featured.power??0} power`;
     return `<button class="team-choice ${rank>=0?'selected':''}" data-id="${c.id}" aria-pressed="${rank>=0}" ${busy || (selection.length===3 && rank<0)?'disabled':''}><span class="pick-number">${rank>=0?rank+1:'+'}</span>${artwork(c)}<strong>${c.name}</strong><small>${typeSymbol(c.type)} · ${c.maxHp} HP</small><small>${featured.name} · ${strength}</small></button>`;
   };
   $('team-options').innerHTML=groups.map(group=>`<section class="team-group" aria-labelledby="team-${group.id}"><h3 id="team-${group.id}">${group.name}</h3><div class="team-row">${group.characters.map(choice).join('')}</div></section>`).join('');
