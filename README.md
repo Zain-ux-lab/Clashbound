@@ -10,6 +10,30 @@ and use type matchups and signature abilities to win.
 **Mode:** single player against a deterministic tactical bot.
 **Demo:** [Play Clashbound](https://clashbound.onrender.com/) (free Render instance; initial loading may take a minute).
 
+## My contribution and current focus
+
+I proposed the game and, in our two-person team, focused on the browser
+interface, tactical bot, gameplay decisions and testing. Abijeason mainly
+built the core combat engine and also worked on art and presentation. We
+reviewed and integrated each other's work; this is a shared project.
+
+The bot's [search code](backend/bot/search.py) simulates legal actions using
+the same engine as live matches. I tested its decisions with seeded team
+matchups and baseline opponents; the [evaluation notes](docs/evaluation/BOT_EVALUATION.md)
+show both strengths and remaining weaknesses. I also worked on move choice,
+character identity and replayability. The character-motion work in
+[PR #31](https://github.com/Zain-ux-lab/Clashbound/pull/31) is a standalone
+review prototype for Abi, **not part of the playable battle screen**.
+
+I am now more interested in improving the game from human playtests than in
+claiming it is finished. The next evidence to add here is a short gameplay
+recording and a dated playtest note showing a specific issue, the change we
+made and the result.
+
+![Colosseum arena artwork](frontend/assets/arenas/01-colosseum.png)
+
+*One of eight arena backgrounds; artwork preview, not a gameplay screenshot.*
+
 ![Colosseum arena artwork](frontend/assets/arenas/01-colosseum.png)
 
 *One of eight arena backgrounds; artwork preview, not a gameplay screenshot.*
