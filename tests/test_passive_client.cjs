@@ -85,3 +85,13 @@ test('dark battle passive state keeps readable contrast',()=>{
  const lum=hex=>hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
  assert.ok((lum(color)+.05)/(lum('#0d1825')+.05)>=4.5);
 });
+
+test('dark theme gives recoil warnings an explicit high-contrast color',()=>{
+ const css=readFileSync(new URL('../frontend/shadow-theatre.css',`file://${__filename}`),'utf8');
+ const warning=css.match(/\.move-warning[^}]*color:(#[0-9a-f]{6})/i);
+ const explanation=css.match(/\.effect-explanations em[^}]*color:(#[0-9a-f]{6})/i);
+ assert.ok(warning,'Move recoil warning needs a dark-theme override');
+ assert.ok(explanation,'Expanded recoil explanation needs a dark-theme override');
+ const lum=hex=>hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+ for(const [color,bg]of [[warning[1],'#142332'],[explanation[1],'#101d2b']])assert.ok((lum(color)+.05)/(lum(bg)+.05)>=4.5);
+});

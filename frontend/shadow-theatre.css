@@ -56,3 +56,5 @@ html:has(body.shadow-theatre){background:#080d14}
 .shadow-theatre #team-dialog{max-width:1100px}
 .shadow-theatre #custom-builds{margin-top:22px;padding-top:16px;border-top:1px solid #354d5e}
 @media(max-height:500px){.shadow-theatre .shell .fighter.left:has(.sprite),.shadow-theatre .shell .fighter.right:has(.sprite){--fighter-size:calc(300 * var(--battle-unit));bottom:23%}}
+.shadow-theatre .shell .move-warning{color:#f0c28f}
+.shadow-theatre .shell .effect-explanations em{color:#f0c28f}
