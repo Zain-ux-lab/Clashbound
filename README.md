@@ -30,13 +30,9 @@ claiming it is finished. The next evidence to add here is a short gameplay
 recording and a dated playtest note showing a specific issue, the change we
 made and the result.
 
-![Colosseum arena artwork](frontend/assets/arenas/01-colosseum.png)
+![Playable Drowned Belfry battle](frontend/assets/arenas/shadow-battle-preview.jpg)
 
-*One of eight arena backgrounds; artwork preview, not a gameplay screenshot.*
-
-![Colosseum arena artwork](frontend/assets/arenas/01-colosseum.png)
-
-*One of eight arena backgrounds; artwork preview, not a gameplay screenshot.*
+*The playable battle interface with the approved Shadow Theatre character art.*
 
 ## Architecture
 
@@ -95,8 +91,8 @@ homepage sound controls are included; further interface polish remains in progre
 - Switching costs a turn and clears effects; knockout replacements are free.
 - Tactical bot searches its action and an opponent reply, then evaluates surviving characters, HP,
   pending effects and active damage matchups. It uses the same engine as the API.
-- Ten original character PNGs and eight randomly selected arenas. The arena
-  persists through refresh and does not repeat on consecutive session resets.
+- Ten approved Shadow Theatre character sprites and the Drowned Belfry visual stage.
+  The earlier arena catalog remains available as concept art; the current battle UI uses the Belfry.
 - Move details show base damage. Attack announcements and floating HP changes
   show outcomes; type symbols have accessible names and hover labels.
 

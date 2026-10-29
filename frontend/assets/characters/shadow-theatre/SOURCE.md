@@ -1,0 +1,1 @@
+Previously approved Shadow Theatre character concepts and transparent derivatives, generated with OpenAI image generation for Clashbound and trimmed for display. These assets are shared with the standalone review mockup in PR #31. The arena was exported from the existing Figma Drowned Belfry concept, node 6:2: https://www.figma.com/design/QGFLS4jDj3YJb20c8OudFo .
