@@ -2,7 +2,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {readFileSync}=require('node:fs');
 const vm=require('node:vm');
-function element(){return {open:false,hidden:false,innerHTML:'',style:{setProperty(){}},classList:{add(){},remove(){},toggle(){}},listeners:{},addEventListener(t,f){this.listeners[t]=f;},replaceChildren(){},querySelectorAll(){return [];},querySelector(){return element();},showModal(){this.open=true;},close(){this.open=false;},focus(){}};}
+function element(){return {open:false,hidden:false,innerHTML:'',style:{setProperty(){}},setAttribute(name,value){this[name]=value;},classList:{add(){},remove(){},toggle(){}},listeners:{},addEventListener(t,f){this.listeners[t]=f;},replaceChildren(){},querySelectorAll(){return [];},querySelector(){return element();},showModal(){this.open=true;},close(){this.open=false;},focus(){}};}
 async function setup(){
  const nodes=new Map();const get=id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);};
  const c={id:'glowmire',name:'Glowmire',type:'Spirit',hp:40,maxHp:90,passive:{id:'last_light',name:'Last Light',description:'Survive once.'},passiveState:{lastLightUsed:true},moves:[{name:'Follow the Lantern',effect:'special',amount:0,description:'Heal a reserve and switch. Full explanation stays readable.',targets:[{index:1,label:'Mage · 80/100 HP'}]}]};
@@ -69,4 +69,29 @@ test('passive state text contrasts with the cream health panel',()=>{
  const luminance=hex=>{const rgb=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
  const values=[luminance(color),luminance('#e9e6d4')].sort((a,b)=>b-a);
  assert.ok((values[0]+.05)/(values[1]+.05)>=4.5,`Unreadable passive color ${color}`);
+});
+
+test('playable battle uses the approved art and consistently labels the curated stage',async()=>{
+ const {get}=await setup();
+ assert.match(get('fighter-0').innerHTML,/assets\/characters\/shadow-theatre\/glowmire\.png/);
+ assert.equal(get('.arena')['aria-label'],'Drowned Belfry battlefield');
+ assert.equal(get('arena-name').textContent,'DROWNED BELFRY');
+ assert.equal(get('battle-arena-caption').textContent,'Drowned Belfry');
+});
+
+test('dark battle passive state keeps readable contrast',()=>{
+ const css=readFileSync(new URL('../frontend/shadow-theatre.css',`file://${__filename}`),'utf8');
+ const color=css.match(/\.passive-state\{[^}]*color:(#[0-9a-f]{6})/i)[1];
+ const lum=hex=>hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+ assert.ok((lum(color)+.05)/(lum('#0d1825')+.05)>=4.5);
+});
+
+test('dark theme gives recoil warnings an explicit high-contrast color',()=>{
+ const css=readFileSync(new URL('../frontend/shadow-theatre.css',`file://${__filename}`),'utf8');
+ const warning=css.match(/\.move-warning[^}]*color:(#[0-9a-f]{6})/i);
+ const explanation=css.match(/\.effect-explanations em[^}]*color:(#[0-9a-f]{6})/i);
+ assert.ok(warning,'Move recoil warning needs a dark-theme override');
+ assert.ok(explanation,'Expanded recoil explanation needs a dark-theme override');
+ const lum=hex=>hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+ for(const [color,bg]of [[warning[1],'#142332'],[explanation[1],'#101d2b']])assert.ok((lum(color)+.05)/(lum(bg)+.05)>=4.5);
 });

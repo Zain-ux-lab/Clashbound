@@ -3,14 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="canonical" href="https://clashbound.onrender.com/battle.html">
+  <meta name="description" content="Play Clashbound: choose three of ten fighters, customise your moves and face a tactical bot in a turn-based browser battle.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Clashbound · Play the battle demo">
+  <meta property="og:description" content="A two-person browser-game project built with Python/FastAPI and JavaScript. Build a team, use unique abilities and outplay the bot.">
+  <meta property="og:url" content="https://clashbound.onrender.com/battle.html">
+  <meta property="og:image" content="https://clashbound.onrender.com/assets/arenas/shadow-battle-preview.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <title>Clashbound · Play the bot</title>
   <link rel="stylesheet" href="style.css?v=9">
+  <script src="battle-art.js?v=1" defer></script>
   <script src="builds.js?v=4" defer></script>
-  <script src="script.js?v=20" defer></script>
+  <script src="script.js?v=shadow1" defer></script>
   <link rel="stylesheet" href="builds.css?v=2">
 <link rel="stylesheet" href="polish.css?v=5">
-<link rel="stylesheet" href="battle-layout.css?v=2"></head>
-<body>
+<link rel="stylesheet" href="battle-layout.css?v=2"><link rel="stylesheet" href="shadow-theatre.css?v=1"></head>
+<body class="shadow-theatre">
   <main class="shell">
     <header class="topbar"><a class="brand" href="./index.html">CLASHBOUND</a><div class="location"><strong id="arena-name">BATTLE ARENA</strong> <span>Friendly battle</span></div><button id="restart" class="quiet">Settings ⚙</button></header>
     <p id="initiative-message" class="initiative-message" role="status"></p><div class="demo-note"><span class="dot"></span> PLAY THE BOT <span>Ten characters · four moves each</span></div>
@@ -38,8 +47,7 @@
     <button id="team-cancel" class="close" aria-label="Return to battle" hidden>×</button>
     <p class="eyebrow">CHOOSE YOUR TEAM · SOLO BATTLE</p>
     <h2 id="team-title">Choose your three.</h2>
-    <p>Your first pick leads. The bot draws three different characters after you lock in.</p>
-    <p>Your first selected character leads. Faster lead Speed opens; tied leads compare total team Speed. Only an exact tie uses a draw. Turns then alternate.</p><div id="lead-options" class="lead-controls"></div><div id="team-options" class="team-options"></div><details id="custom-builds" open><summary>Build your team · compare &amp; swap moves</summary><p>Default builds are ready. Explore alternatives without deselecting first. All moves are available immediately. Each character has a passive ability and a unique fourth move.</p><div id="loadout-options"></div></details>
+    <p>Choose three fighters. Your first pick leads; Speed decides who opens. Turns then alternate.</p><div id="lead-options" class="lead-controls"></div><div id="team-options" class="team-options"></div><details id="custom-builds"><summary>Build your team · compare &amp; swap moves</summary><p>Default builds are ready. Explore alternatives without deselecting first. All moves are available immediately. Each character has a passive ability and a unique fourth move.</p><div id="loadout-options"></div></details>
     <p class="prototype-note">Four moves per character. Use type matchups, signature abilities and switching to outplay the bot.</p>
     <p data-error role="alert" hidden></p>
     <button id="team-retry" class="quiet" hidden>Retry connection</button>

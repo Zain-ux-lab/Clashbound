@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 // Minimal DOM for connection flow only; full battle rendering is browser-tested.
 function element() {
-  return {open:false, hidden:false, style:{setProperty(){}},
+  return {open:false, hidden:false, style:{setProperty(){}},setAttribute(name,value){this[name]=value;},
     classList:{add(){},remove(){},toggle(){}},
     listeners:{}, addEventListener(type,listener){this.listeners[type]=listener;}, replaceChildren(){}, querySelectorAll(){return [];},
     querySelector(){return element();}, showModal(){this.open=true;}, close(){this.open=false;}};

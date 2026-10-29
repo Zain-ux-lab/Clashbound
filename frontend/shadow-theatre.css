@@ -1,0 +1,60 @@
+/* Approved Shadow Theatre art, staged on the Belfry's continuous floor. */
+.shadow-theatre{background:#080d14;color:#d9e4ec}
+.shadow-theatre .shell .arena{background-color:#0c1824;background-size:cover;background-position:center;isolation:isolate}
+.shadow-theatre .arena:before{background:linear-gradient(0deg,#03070d66,transparent 40%);z-index:0}
+.shadow-theatre .shell .fighter.left:has(.sprite),.shadow-theatre .shell .fighter.right:has(.sprite){--fighter-size:calc(335 * var(--battle-unit));bottom:20%;--sprite-lift:0%;transform-origin:center bottom}
+.shadow-theatre .shell .fighter.left:has(.sprite){left:34%}
+.shadow-theatre .shell .fighter.right:has(.sprite){left:64%}
+.shadow-theatre .shell .fighter-hud,.shadow-theatre .shell .team-panel,.shadow-theatre .shell .enemy-team{background:#0d1825e8;border-color:#536b7b;color:#dce8ee;box-shadow:0 6px 25px #0005}
+.shadow-theatre .shell .move{background:#142332ed;border-color:#5a7182;color:#e1eaf0}
+.shadow-theatre .shell .move:hover:not(:disabled){background:#263b4d}
+.shadow-theatre .shell .brand,.shadow-theatre .shell .quiet,.shadow-theatre .shell .eyebrow,.shadow-theatre .shell .hp,.shadow-theatre .shell .side-label,.shadow-theatre .shell .side-label span{color:#c1d0dc}
+.shadow-theatre .shell .portrait{background:#26364588;color:#dce8ee;border-color:#577082}
+.shadow-theatre .shell .portrait.active{background:#38506388}
+.shadow-theatre .shell .sprite{image-rendering:auto;object-fit:contain}
+.shadow-theatre .arena-caption{color:#b6c9d6}
+.shadow-theatre .fighter-hud,.shadow-theatre .enemy-team{z-index:4}
+.shadow-theatre .shell .fighter .hp-change{z-index:5}
+@media(prefers-reduced-motion:reduce){.shadow-theatre .shell .fighter .sprite{animation:none!important}}
+.reduce-motion.shadow-theatre .shell .fighter .sprite{animation:none!important}
+
+.shadow-theatre .shell .quiet{background:#152330;border-color:#536b7b}
+
+html:has(body.shadow-theatre){background:#080d14}
+.shadow-theatre .shell .detail-panel{background:#101d2bf5;color:#e0ebf3;border:1px solid #536b7b}
+.shadow-theatre .shell .detail-panel h3,.shadow-theatre .shell .detail-panel .damage{color:#edf5fa}
+.shadow-theatre .shell .detail-panel p{color:#bacdd9}
+.shadow-theatre .move-reference-open{background:#152330;color:#d6e4ee;border-color:#536b7b}
+/* Interface and picker surfaces use the same quiet slate palette. */
+.shadow-theatre{color-scheme:dark}
+.shadow-theatre .shell{background:#080d14}
+.shadow-theatre .shell .fighter .sprite{image-rendering:auto;object-fit:contain;filter:drop-shadow(0 6px 7px #0009)}
+.shadow-theatre .shell .move,.shadow-theatre .shell .portrait,.shadow-theatre .shell .team-panel,.shadow-theatre .shell .enemy-team,.shadow-theatre .shell .fighter-hud{border-radius:5px}
+.shadow-theatre .shell .health{background:#080d14;border-color:#3b4c5a}
+.shadow-theatre .shell .health>span{background:#b34f5c}
+.shadow-theatre .shell .turn-badge,.shadow-theatre .initiative-message{background:#152330ed;color:#dce8ec;border:1px solid #536b7b}
+.shadow-theatre .shell .history,.shadow-theatre .shell .history ol,.shadow-theatre footer{color:#b2c4d1}
+.shadow-theatre .shell .passive-state{color:#b2c7d6}
+.shadow-theatre .shell .effect-explanations{background:#101d2b;color:#deebf2;border-color:#536b7b}
+.shadow-theatre dialog,.shadow-theatre #team-dialog,.shadow-theatre #settings-dialog,.shadow-theatre #move-reference,.shadow-theatre #target-dialog{background:#101b27;color:#e0e9ed;border:1px solid #536b7b;border-radius:8px;box-shadow:0 20px 80px #0009}
+.shadow-theatre dialog::backdrop{background:#03070ce8;backdrop-filter:blur(5px)}
+.shadow-theatre dialog h1,.shadow-theatre dialog h2,.shadow-theatre dialog h3,.shadow-theatre dialog legend,.shadow-theatre dialog summary,.shadow-theatre dialog strong{color:#e7e6dc}
+.shadow-theatre dialog p,.shadow-theatre dialog small,.shadow-theatre #team-dialog .playstyle,.shadow-theatre #team-dialog .loadout small,.shadow-theatre .prototype-note{color:#b4c7d4}
+.shadow-theatre #team-dialog .team-choice{background:#192936;border:1px solid #425c6d;color:#e3edf0;border-radius:6px}
+.shadow-theatre #team-dialog .team-choice:hover:not(:disabled){background:#263e4e;border-color:#9dc8d6}
+.shadow-theatre #team-dialog .team-choice.selected{background:#294451;border-color:#b4dce1;box-shadow:inset 0 0 0 1px #b4dce1}
+.shadow-theatre #team-dialog .team-choice strong,.shadow-theatre #team-dialog .team-choice small{color:#d2e0e8}
+.shadow-theatre #team-dialog .team-choice .sprite{object-fit:contain;filter:drop-shadow(0 4px 5px #0007)}
+.shadow-theatre #team-dialog .pick-number{background:#0a1722;color:#d8eff3}
+.shadow-theatre #team-dialog .loadout,.shadow-theatre #team-dialog .character-build,.shadow-theatre #team-dialog .build-move,.shadow-theatre #team-dialog .swap-comparison{background:#192b39;color:#e3edf0;border-color:#476273;border-radius:5px}
+.shadow-theatre #team-dialog .build-move>span,.shadow-theatre #team-dialog .swap-hint,.shadow-theatre #team-dialog .tradeoff{color:#bdcbd3}
+.shadow-theatre dialog button,.shadow-theatre #team-dialog .build-move button,.shadow-theatre #team-dialog .swap-comparison button{background:#253d4c;color:#e4edf0;border:1px solid #658292;border-radius:5px}
+.shadow-theatre dialog button:disabled{color:#9cafba;background:#192936;opacity:.65}
+.shadow-theatre dialog .start-battle{background:#d7d09f;color:#111b21;border-color:#ede6b9;font-weight:700}
+.shadow-theatre dialog .close{background:transparent;border:0;color:#d4e2e9}
+.shadow-theatre button:focus-visible,.shadow-theatre summary:focus-visible,.shadow-theatre a:focus-visible{outline:3px solid #a4d9e8;outline-offset:3px}
+.shadow-theatre #team-dialog{max-width:1100px}
+.shadow-theatre #custom-builds{margin-top:22px;padding-top:16px;border-top:1px solid #354d5e}
+@media(max-height:500px){.shadow-theatre .shell .fighter.left:has(.sprite),.shadow-theatre .shell .fighter.right:has(.sprite){--fighter-size:calc(300 * var(--battle-unit));bottom:23%}}
+.shadow-theatre .shell .move-warning{color:#f0c28f}
+.shadow-theatre .shell .effect-explanations em{color:#f0c28f}

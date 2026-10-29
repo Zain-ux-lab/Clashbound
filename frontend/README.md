@@ -148,3 +148,13 @@ The build screen includes passive descriptions, a locked fourth signature move,
 explicit target selection and opening Speed explanations. All moves are available
 immediately; mastery rewards and earned crests from PR #29 are superseded.
 The move reference button is labelled **Moves & abilities**.
+
+## Shadow Theatre battle UI · 29 October 2026
+
+The playable battle and team picker now use the approved ten-character art,
+Drowned Belfry stage, slate panels and readable pale text. Move customisation
+starts collapsed to keep team selection concise. The homepage layout is unchanged.
+Combat rules, bot decisions and pacing are unchanged. The server's historical
+visual-only arena catalog is retained, while the battle presents the curated
+Belfry stage and labels it consistently. The limb/effect motion library in PR #31
+remains a separate review prototype, not production animation.

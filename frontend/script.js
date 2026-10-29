@@ -59,7 +59,7 @@ function setError(message = '') {
 }
 function current(player = 0) { return state.teams[player][state.active[player]]; }
 function allowed(kind,index,target) { return !busy && !disconnected && state?.actions.some(a=>a.kind===kind && a.index===index && (target===undefined || a.target===target)); }
-function artwork(c) { return `<img class="sprite" src="assets/characters/${c.id}.png" alt="${c.name}" decoding="sync">`; }
+function artwork(c) { return `<img class="sprite" src="assets/characters/shadow-theatre/${c.id}.png" alt="${c.name}" decoding="sync">`; }
 function portrait(c, index, enemy = false) {
   const player = enemy ? 1 : 0;
   const active = state.active[player] === index;
@@ -77,19 +77,20 @@ function render() {
   }
   hideDetails();
   if($('initiative-message'))$('initiative-message').textContent=state.initiative?`${state.initiative.firstPlayer===0?'You open':'Bot opens'} · ${state.initiative.reason??'Opening Speed'}`:'';
-  if (state.arena) {
-    const arena=document.querySelector('.arena');
-    arena.style.backgroundImage=`url("${state.arena.image}")`;
-    arena.setAttribute('aria-label',`${state.arena.name} battlefield`);
-    $('arena-name').textContent=state.arena.name.toUpperCase();
-    $('battle-arena-caption').textContent=state.arena.name;
-    document.title=`Clashbound · ${state.arena.name}`;
-  }
+  // The approved Belfry is the curated visual stage; arena selection has no combat effects.
+  const arena=document.querySelector('.arena');
+  arena.style.backgroundImage='url("assets/arenas/drowned-belfry.svg")';
+  arena.setAttribute('aria-label','Drowned Belfry battlefield');
+  $('arena-name').textContent='DROWNED BELFRY';
+  $('battle-arena-caption').textContent='Drowned Belfry';
+  document.title='Clashbound · Drowned Belfry';
   for (let p=0; p<2; p++) {
     const c = current(p);
     $(`hud-${p}`).style.setProperty('--type', TYPES[c.type]);
     $(`hud-${p}`).innerHTML = `<div class="side-label">${p===0?'YOU':'OPPONENT'} <span>${p===0?'PLAYER':'TACTICAL BOT'}</span></div><div class="hud-top"><strong>${c.name}</strong><span class="type" title="${c.type}" aria-label="${c.type}">${TYPE_SYMBOLS[c.type]}</span></div><div class="health" role="meter" aria-label="${p===0?'Your':'Opponent'} health" aria-valuemin="0" aria-valuemax="${c.maxHp}" aria-valuenow="${c.hp}"><span style="width:${100*c.hp/c.maxHp}%"></span></div><div class="hp">${c.hp} / ${c.maxHp} HP</div>${c.guardPercent?`<div class="guard-state">◈ NEXT HIT −${c.guardPercent}%</div>`:''}`;
     $(`hud-${p}`).innerHTML += passiveInfo(c)+effectIndicators(c,p);
+    const art=window.ClashboundCharacterProfiles?.[c.id];
+    if(art){$(`fighter-${p}`).style.setProperty('--body-ratio',art.aspect);$(`fighter-${p}`).style.setProperty('--body-scale',art.scale);}
     $(`fighter-${p}`).innerHTML = artwork(c);
     $(`fighter-${p}`).classList.toggle('fainted', c.hp===0);
   }
