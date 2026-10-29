@@ -1,0 +1,21 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "User-approved Shadow Theatre concept",
+  "prompts": [
+    [
+      "background",
+      "Edit the supplied Shadow Theatre reference into a clean environment plate for the same homepage. REMOVE all text, logo, buttons, navigation, BOTH characters (dragon left and knight right) completely. Preserve the composition, very large eclipse at upper center, ruined arches, foreground broken left and right stone bridge ledges at approximately 68% height, cavernous depth, blue fog. Fill removed characters with coherent architecture/sky. Rich fine illustration detail: chiseled limestone blocks, chipped angular masonry, subtle weathering, paper fibers, finely hatched shadows, restrained painterly rim lighting. Match this reference's bespoke dark cut-paper theatre style, black ink navy slate blue pale ivory light, not photorealistic, not glossy 3D. Keep central zone dark and uncluttered for separately rendered headline. No characters and absolutely no text. Wide 16:9.",
+      false
+    ],
+    [
+      "dragon",
+      "Using the supplied Shadow Theatre reference as the exact art-direction guide, create a detailed isolated Vesperfang dragon cutout. It will sit on the LEFT of the homepage facing RIGHT toward a knight. Full body crouched dragon with lowered long horned head, recognizable powerful reptilian anatomy, four articulated legs with individual claws all grounded along the bottom, folded angular bat wings arching over its back, layered overlapping charcoal scales and armor-like plates, visible joint rivets as a carefully crafted paper puppet, elegantly tapering tail trailing left. Cold pale blue glowing eye, sharply cut ivory-blue rim light on right-facing edges, subtle dark indigo facets and engraved fine hatch marks. High detail hand-assembled layered paper / ink-illustration appearance exactly matching reference, not crude polygons, not cartoon clip art, no bright purple, no gold dragon. Side view in three-quarter pose, whole silhouette fully visible with margins, landscape composition. True transparent background, NO floor NO pedestal NO shadow NO text NO scenery. Detailed limbs and wing membrane, readable in a dark blue scene. Preserve original visual identity.",
+      true
+    ],
+    [
+      "bastion",
+      "Using the supplied Shadow Theatre reference as exact art-direction guide, create a detailed isolated Bastion knight cutout. He will stand on RIGHT facing LEFT towards a dragon. Full body slim heroic knight, three-quarter left-facing ready stance, head looking left. Sharply pointed crown-like enclosed helmet, narrow pale-blue visor, intricately layered charcoal black steel pauldrons breastplate vambraces articulated gauntlets cuisses greaves and boots, many bevels engraved scratches tiny rivets and cut-paper overlapping planes. One hand holds a long sword angled down toward LEFT, the other bears a large kite shield on right side of silhouette with thin aged ivory-gold edging and a single ivory four-point star. Long torn dark cape streams RIGHT. Feet clearly planted on same baseline. Match rich artisanal cut-paper shadow puppet with fine paper-grain shading and silver-blue rim lighting, dark navy/charcoal, restrained antique-gold details; not glossy3D or crude polygon shapes. Entire body sword shield cape in frame with margin. True transparent background, no scenery no rock no floor no shadow no text.",
+      true
+    ]
+  ]
+}

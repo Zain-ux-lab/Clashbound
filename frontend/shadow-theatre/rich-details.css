@@ -1,0 +1,165 @@
+/* Shadow Theatre: the fighters and ledges move as one stage. */
+.brand{display:inline-flex;align-items:center;gap:6px}.brand-crest{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px #c5dbed22)}
+.theatre{position:absolute;left:50%;top:50%;width:max(100vw,177.778svh,1244px);aspect-ratio:16/9;transform:translate(-50%,-50%);pointer-events:none}
+.camera,.scene-depth{position:absolute;inset:0}.environment{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.moonlight{position:absolute;left:34.5%;top:-.5%;width:39%;height:69.5%;border-radius:50%;background:radial-gradient(ellipse,transparent 57%,#d6e4de12 62%,#e0e9d84d 68%,#accde935 71%,transparent 77%);filter:blur(12px);mix-blend-mode:screen;animation:eclipse-breathe 7s ease-in-out infinite alternate}
+.light-rays{position:absolute;inset:-20%;opacity:.22;mix-blend-mode:screen;background:conic-gradient(from 145deg at 58% 22%,transparent 0deg,#bdcfe520 6deg,transparent 10deg,transparent 17deg,#b9def13b 19deg,transparent 23deg,transparent 35deg,#dceafa30 38deg,transparent 42deg);filter:blur(5px);animation:ray-drift 20s ease-in-out infinite alternate}
+.character{position:absolute;pointer-events:auto;filter:drop-shadow(0 3px 2px #020811aa)}.character img{width:100%;display:block}.dragon-character{width:36%;left:-2%;bottom:33%;transform:rotate(7deg);transform-origin:65% 100%}.bastion-character{width:22%;right:6%;bottom:33.5%}
+.character-art{transition:filter .45s}.character:hover .character-art{filter:brightness(1.12)}.character-light{position:absolute;inset:0;filter:brightness(2) saturate(.35);mix-blend-mode:screen;opacity:0;clip-path:polygon(-35% 0,-20% 0,-60% 100%,-75% 100%);animation:armour-glint 12s ease-in-out infinite}.dragon-character .character-light{animation-delay:-5s}
+/* Grounded characters have no whole-body bobbing or independent scroll drift. */
+.mist{position:absolute;left:-25%;width:150%;height:30%;pointer-events:none;background:radial-gradient(ellipse at 18% 52%,#aecbd450,transparent 37%),radial-gradient(ellipse at 67% 57%,#a6cce85c,transparent 40%),radial-gradient(ellipse at 90% 45%,#c2dae72e,transparent 35%);filter:blur(23px);mix-blend-mode:screen}
+.mist-back{top:43%;opacity:.7;animation:mist-drift 20s ease-in-out infinite alternate}.mist-front{top:69%;height:17%;opacity:.42;animation:mist-drift 28s ease-in-out infinite alternate-reverse}
+.motes{position:absolute;inset:0;pointer-events:none}.motes i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:#e5ebdb;box-shadow:0 0 7px #b6daf3;opacity:0;animation:mote-rise var(--duration) var(--delay) linear infinite}
+.foreground-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 52% 40%,transparent 45%,#02081280 100%);pointer-events:none}.hero-shade{background:linear-gradient(0deg,#080f19,transparent 16%)}.hero-copy{top:35%;width:57%}.hero h1{font-size:clamp(64px,8.1vw,145px);text-shadow:0 4px 3px #02070d,0 8px 45px #020811}.edition{color:#c8d7e1;text-shadow:0 2px 5px #000}.tagline{text-shadow:0 3px 12px #02070d}
+/* A forged plate with a centred label, no diagonal action arrow. */
+.play{position:relative;isolation:isolate;overflow:visible;clip-path:none;min-width:210px;min-height:58px;gap:0;padding:16px 36px;border:1px solid #efd991;border-radius:2px;background:linear-gradient(180deg,#f4e6b5,#d9bc6c);color:#17202a;box-shadow:inset 0 1px #fff6d1,inset 0 -3px #ad8843,0 5px 18px #010710a6,0 0 34px #eed48b16;letter-spacing:.16em;transition:box-shadow .3s,background .3s,transform .2s}
+.play .button-label{position:relative;z-index:2;font-family:Barlow,sans-serif;font-size:15px;line-height:1.3}.play:before{content:'';position:absolute;inset:4px;border:1px solid #7c63294d;pointer-events:none}.play:after{content:'';position:absolute;width:75%;height:1px;left:12.5%;bottom:-6px;background:linear-gradient(90deg,transparent,#f0d287,transparent);box-shadow:0 0 14px #efd888;opacity:.5;transition:opacity .3s,transform .3s}.button-flare{position:absolute;inset:-25px;z-index:-1;pointer-events:none;background:radial-gradient(ellipse,#e7c57025,transparent 67%);animation:button-breathe 4s ease-in-out infinite alternate}.play:hover{background:linear-gradient(180deg,#fff2c9,#e5c67b);box-shadow:inset 0 1px #fff9dc,inset 0 -3px #ad8843,0 6px 23px #010710,0 0 42px #edcc7f45;transform:translateY(-2px)}.play:hover:after{opacity:1;transform:scaleX(1.12)}.play:active{transform:translateY(1px)}
+.story-aside{align-self:center;min-width:0}.alliance-art{position:relative;isolation:isolate;height:360px;margin:0 -65px}.alliance-moon{position:absolute;inset:10% 8%;border-radius:50%;background:radial-gradient(ellipse,#58718b42,transparent 70%);box-shadow:1px -1px #96b6ce45}.alliance-art img{position:absolute;object-fit:contain;filter:drop-shadow(0 9px 7px #0008)}.alliance-dragon{width:82%;height:64%;left:-4%;bottom:12%;opacity:.75}.alliance-knight{width:70%;height:96%;right:-4%;bottom:3%}.story-aside blockquote{font-size:20px;margin:12px 0 0;color:#bbcbd4}
+/* The complete artwork fits in the circle's inscribed square. */
+.portrait{height:auto;min-height:440px;aspect-ratio:1}.portrait-ring{inset:7%;border-radius:50%;transform:none}.portrait-window{position:absolute;inset:7%;border-radius:50%;overflow:hidden;display:grid;place-items:center}.portrait-window img{height:72%;width:72%;max-width:none;object-fit:contain;object-position:center;filter:drop-shadow(0 14px 12px #0008)}.portrait[data-shape=vesperfang] .portrait-window img{width:88%;height:60%}.portrait[data-shape=hushwing] .portrait-window img{width:76%;height:76%}
+.world-illustration img{filter:brightness(.8);object-position:50% 52%}.world:after{background:linear-gradient(90deg,#080f19ee,transparent 90%),linear-gradient(0deg,#080f19,transparent 30%,transparent 70%,#080f19)}
+.gameplay-soon{position:relative;overflow:hidden;isolation:isolate;min-height:410px;border:1px solid #344b5d;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;background:radial-gradient(ellipse at 50% 52%,#1b2d3e,#0b1420 68%)}.gameplay-soon:before,.gameplay-soon:after{content:'';position:absolute;inset:20px;border:1px solid #6b819428;pointer-events:none}.gameplay-soon:after{inset:-30%;border:0;background:conic-gradient(from 15deg,transparent 20%,#7894ac0b 40%,transparent 60%);animation:preview-drift 30s linear infinite;z-index:-1}.preview-crest{width:95px;height:95px;object-fit:contain;opacity:.7;margin-bottom:8px}.preview-label{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#a9becc}.gameplay-soon h3{font-size:48px;margin:13px 0 10px}.gameplay-soon>p{font-size:16px;margin:0;color:#93aabb}.preview-rule{height:1px;width:95px;background:linear-gradient(90deg,transparent,#b1c6d3,transparent);margin-top:26px}
+.closing{min-height:650px;padding:165px 20px 85px}.closing-atmosphere{position:absolute;inset:0;z-index:-1;pointer-events:none}.closing-poster,.eclipse-film{position:absolute;width:680px;height:680px;object-fit:contain;max-width:none;left:50%;top:50%;transform:translate(-50%,-50%);opacity:.7}.eclipse-film{mask-image:radial-gradient(ellipse,#000 46%,transparent 72%);visibility:hidden}.closing.has-film .eclipse-film{visibility:visible}.closing.has-film .closing-poster{visibility:hidden}.closing-haze{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,#64819712,transparent 55%);animation:closing-pulse 7s ease-in-out infinite alternate}.closing h2{text-shadow:0 3px 15px #02070d,0 8px 35px #02070d}.closing .kicker{text-shadow:0 2px 5px #000}.closing .play{margin-top:5px}.closing .text-link{margin-top:8px}
+@keyframes eclipse-breathe{from{opacity:.28;transform:scale(.985)}to{opacity:.95;transform:scale(1.045)}}
+@keyframes ray-drift{from{transform:rotate(-3deg);opacity:.13}to{transform:rotate(3deg);opacity:.28}}
+@keyframes mist-drift{from{transform:translateX(-8%) scaleY(.92)}to{transform:translateX(9%) scaleY(1.08)}}
+@keyframes armour-glint{0%,58%{opacity:0;clip-path:polygon(-35% 0,-20% 0,-60% 100%,-75% 100%)}64%{opacity:.25}78%,100%{opacity:0;clip-path:polygon(140% 0,155% 0,115% 100%,100% 100%)}}
+@keyframes mote-rise{0%{transform:translate(0,30px);opacity:0}20%{opacity:.55}80%{opacity:.25}100%{transform:translate(45px,-130px);opacity:0}}
+@keyframes button-breathe{from{opacity:.4}to{opacity:1}}
+@keyframes preview-drift{to{transform:rotate(360deg)}}
+@keyframes closing-pulse{from{opacity:.35;transform:scale(.96)}to{opacity:.8;transform:scale(1.04)}}
+html.is-still *,html.is-still *:before,html.is-still *:after{animation-play-state:paused!important}html.is-still .character-light{opacity:0!important}
+@media(max-width:1000px){.hero-copy{width:65%}.hero h1{font-size:10vw}.edition{letter-spacing:.12em}.alliance-art{height:300px;margin:0 -35px}.portrait{min-height:330px}.closing{padding-top:155px}}
+@media(max-width:650px){header .brand{font-size:18px;gap:0}.brand-crest{width:35px;height:35px}.hero{min-height:760px;height:100svh}.theatre{width:205%;min-width:0;top:auto;bottom:50px;transform:translateX(-50%)}.hero-copy{top:23%;width:94%}.hero h1{font-size:16vw}.hero:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#405777,#0d1a2d 75%)}.dragon-character{left:8%;width:33%}.bastion-character{right:13%;width:21%}.scene-caption{display:none}.scroll-cue{bottom:22px}.edition{font-size:9px}.tagline{font-size:16px}.hero-shade{background:linear-gradient(0deg,#080f19,transparent 25%)}.theatre .environment{mask-image:linear-gradient(transparent,#000 18%)}.story-aside{display:block}.alliance-art{height:320px;max-width:400px;margin:35px auto 0}.story-aside blockquote{font-size:18px}.portrait{min-height:300px;width:100%;max-width:440px;margin:auto}.gameplay-soon{min-height:330px}.closing{min-height:570px;padding-top:140px}.closing-poster,.eclipse-film{width:560px;height:560px}.closing h2{font-size:42px;max-width:360px;margin-left:auto;margin-right:auto}.play{min-height:56px}.section-top>p{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}.character-light{opacity:0!important}}
+/* A tall window gets a complete lower stage instead of cropping both fighters away. */
+@media(max-width:1100px) and (orientation:portrait){.hero{height:100svh;min-height:820px;background:radial-gradient(ellipse at 52% 32%,#344b67,#152538 68%,#080f19)}.hero:before{display:none}.theatre{width:115%;min-width:0;top:auto;bottom:75px;transform:translateX(-50%)}.theatre .environment{mask-image:linear-gradient(transparent,#000 16%)}.hero-copy{top:20%;width:92%}.hero h1{font-size:12vw}.dragon-character{left:-2%;width:36%;bottom:33%}.bastion-character{right:6%;width:22%;bottom:33.5%}.hero-shade{background:linear-gradient(0deg,#080f19,transparent 26%)}.scroll-cue{bottom:25px}.scene-caption{display:none}}
+@media(max-width:650px) and (orientation:portrait){.hero{min-height:760px}.hero-copy{top:21%}.hero h1{font-size:16vw}.theatre{width:135%;bottom:90px}.tagline{letter-spacing:.08em}.edition{letter-spacing:.1em}.play-note{max-width:260px;margin-left:auto;margin-right:auto}.hero-copy .play{margin-top:8px}}
+.bastion-character{bottom:33%}.bastion-character:before{content:'';position:absolute;left:23%;width:39%;height:3%;bottom:-.5%;background:radial-gradient(ellipse at 25% 50%,#000b,transparent 32%),radial-gradient(ellipse at 80% 50%,#000b,transparent 32%);filter:blur(2px)}.dragon-character:before{content:'';position:absolute;left:28%;width:68%;height:4%;bottom:.5%;background:radial-gradient(ellipse,#0009,transparent 65%);filter:blur(2px)}.play-note{text-shadow:0 2px 5px #000,0 0 12px #080f19;color:#c9d6df}.portrait-window img{width:84%;height:84%}
+@media(max-width:650px){.portrait[data-shape=vesperfang] .portrait-window img{width:84%;height:60%}}
+/* Mobile play is landscape-only. Upright phones get a clear rotation gate. */
+.orientation-gate{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 28px;background:radial-gradient(ellipse at 50% 32%,#213449,#080f19 72%);color:var(--ivory)}.needs-landscape .orientation-gate{display:flex}.needs-landscape{overflow:hidden}.needs-landscape body{overflow:hidden}.needs-landscape body>header,.needs-landscape body>main,.needs-landscape body>footer,.needs-landscape .skip{visibility:hidden}.rotate-crest{width:88px;height:88px;object-fit:contain;margin-bottom:22px}.rotate-phone{width:42px;height:75px;border:2px solid #a9c0cf;border-radius:7px;position:relative;margin:0 0 32px;transform:rotate(-90deg)}.rotate-phone:before{content:'';position:absolute;width:13px;height:2px;background:#a9c0cf;left:12px;top:5px}.rotate-phone span{position:absolute;inset:13px 6px 8px;background:linear-gradient(135deg,#819fba28,#819fba08)}.orientation-gate h2{font-size:38px;max-width:320px;line-height:1.1;margin-bottom:20px}.orientation-gate p{font-size:17px;color:#b6c8d7;max-width:320px}.orientation-gate .play{margin-top:14px;min-width:235px}.orientation-gate #rotate-status{font-size:14px;min-height:50px;margin-top:22px}.orientation-gate button:disabled{opacity:.65}
+@media(max-height:560px) and (orientation:landscape){header{padding:8px 3%;gap:14px;flex-wrap:nowrap}.brand{font-size:16px;gap:0}.brand-crest{width:30px;height:30px}nav{order:0;width:auto;margin:0 0 0 auto;gap:16px;justify-content:flex-start}nav a{font-size:12px;letter-spacing:.03em}.preferences{gap:8px;margin:0;border-left:1px solid #ffffff25;padding-left:12px}.preferences button{font-size:10px;min-height:30px}.hero{height:100svh;min-height:350px;max-height:none}.theatre{width:100%;min-width:0;top:50%;bottom:auto;transform:translate(-50%,-50%)}.theatre .environment{mask-image:none}.hero-copy{top:23%;width:57%}.hero h1{font-size:8.2vw}.edition{font-size:8px;letter-spacing:.12em;margin-bottom:8px}.tagline{font-size:13px;letter-spacing:.12em;margin:9px 0 14px}.hero-copy .play{min-height:43px;min-width:175px;padding:10px 25px}.play .button-label{font-size:13px}.play-note{font-size:10px;margin-top:10px;max-width:none}.scroll-cue{bottom:10px;font-size:8px;gap:5px}.scroll-cue i{height:15px}.scene-caption{display:none}.hero-shade{background:linear-gradient(0deg,#080f19,transparent 18%)}.dragon-character{left:-2%;width:36%;bottom:33%}.bastion-character{right:6%;width:22%;bottom:33%}.portrait{min-height:310px}.alliance-art{height:280px}.closing{min-height:570px}}
+@media(max-width:650px) and (orientation:landscape){header{gap:9px}.brand{font-size:14px}.brand-crest{width:24px;height:24px}nav{gap:11px}nav a{font-size:11px}.preferences{gap:6px;padding-left:8px}.preferences button{font-size:9px}.hero-copy{top:21%}.hero h1{font-size:8.2vw}.hero .edition{font-size:7px}.hero .tagline{font-size:12px}}
+@media(max-width:1100px) and (orientation:portrait){.theatre{mask-image:linear-gradient(to bottom,transparent,#000 24%)}.theatre .environment{mask-image:none}}
+/* October 17: larger dragon, planted contact points and local puppet movement. */
+.theatre .dragon-character{width:58%;left:-24%;bottom:31.8%}
+.theatre .bastion-character{width:22%;right:6%;bottom:31.8%}
+.puppet-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.has-puppet>.character-art{visibility:hidden}.has-puppet>.character-light{display:none}
+.character:before{z-index:-1}.dragon-character:before{bottom:3%;left:32%;width:62%;height:3%}
+.play{border:0;border-radius:0;min-width:260px;min-height:74px;padding:24px 54px;background:transparent url('assets/forged-button.svg') center/100% 100% no-repeat;color:#f1e3b7;box-shadow:none;filter:drop-shadow(0 5px 8px #0009);transition:filter .25s,transform .25s}
+.play .button-label{text-shadow:0 2px 2px #000;letter-spacing:.2em}.play:before{display:none}.play:after{bottom:4px;opacity:.25}.play:hover{background:transparent url('assets/forged-button.svg') center/100% 100% no-repeat;box-shadow:none;filter:drop-shadow(0 3px 12px #c9b47566) brightness(1.17)}.play:focus-visible{outline:2px solid #f3df9f;outline-offset:5px}.button-flare{inset:0;background:linear-gradient(115deg,transparent 30%,#e9d9a713 47%,transparent 60%);z-index:1}
+@media(max-height:560px) and (orientation:landscape){.hero-copy .play{min-width:200px;min-height:56px;padding:17px 42px}}
+
+
+.atmosphere-depth{position:absolute;inset:0;pointer-events:none}
+/* Accord portrait: separate silhouettes on a shared stone shelf. */
+.alliance-art{height:auto;aspect-ratio:1.55;margin:0;min-height:240px;isolation:isolate}
+.alliance-art .alliance-dragon{width:63%;height:auto;left:-3%;bottom:17%;opacity:1;z-index:2;filter:drop-shadow(0 3px 2px #000c)}
+.alliance-art .alliance-knight{width:35%;height:auto;right:-1%;bottom:17%;z-index:2;filter:drop-shadow(0 3px 2px #000c)}
+.alliance-moon{inset:4% 0 10%;box-shadow:none;background:radial-gradient(ellipse,#41576f55,transparent 70%)}
+.alliance-platform{position:absolute;left:-5%;right:-5%;height:19%;bottom:0;background:linear-gradient(174deg,#52606c 0%,#303c46 10%,#141e28 13%,#0b131d 55%,transparent 100%);clip-path:polygon(4% 5%,25% 0,48% 5%,67% 0,92% 6%,100% 28%,95% 81%,76% 70%,64% 100%,46% 76%,26% 85%,5% 64%,0 28%);z-index:1}
+.alliance-platform:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 5%,#000c,transparent 25%),radial-gradient(ellipse at 82% 5%,#000c,transparent 16%),repeating-linear-gradient(110deg,transparent 0 48px,#89939c18 49px,transparent 50px 90px)}
+.alliance-mist{position:absolute;inset:10% -8% 15%;background:radial-gradient(ellipse at 35% 70%,#7693af20,transparent 58%);filter:blur(15px);animation:mist-drift 22s ease-in-out infinite alternate;z-index:0}
+.story-aside blockquote{text-align:center;margin-top:24px}
+/* Full-width Blender scene fades into the page at both ends. */
+.closing{min-height:760px;padding:245px 20px 150px;overflow:hidden;background:#080f19}
+.closing-atmosphere{z-index:0;inset:0;mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 77%,transparent 100%)}
+.closing-poster,.eclipse-film{inset:0;width:100%;height:100%;max-width:none;transform:none;object-fit:cover;object-position:50% 50%;opacity:.72;mask-image:none}
+.closing-haze{animation:none;background:linear-gradient(90deg,#080f1966,transparent 30%,transparent 70%,#080f1966),radial-gradient(ellipse at 50% 46%,#080f1980,transparent 62%)}
+.closing> :not(.closing-atmosphere){position:relative;z-index:1}
+.closing>p:not(.kicker),.closing .text-link{color:#d0dce3;text-shadow:0 2px 5px #000}
+@media(max-width:1000px){.accord{grid-template-columns:1fr;display:grid}.story-aside{display:block;max-width:650px;width:100%;margin:25px auto 0}.alliance-art{min-height:260px}.closing{min-height:650px;padding-top:210px;padding-bottom:110px}}
+@media(min-width:1001px){.accord{grid-template-columns:1.15fr 1fr;gap:7%}.alliance-art{min-height:300px}.story-aside{width:100%}}
+/* Keep the title above Vesperfang's face. */
+.hero-copy{top:24%}
+@media(max-height:560px) and (orientation:landscape){.hero-copy{top:15%}}
+@media(max-width:1100px) and (orientation:portrait){.hero-copy{top:15%}}
+/* Recording review: atmosphere, hierarchy and uninterrupted section transitions. */
+.hero-copy{top:19%}
+.hero-copy .tagline{margin-top:16px;margin-bottom:22px}
+.moonlight{left:31%;top:-9%;width:46%;height:82%;opacity:1;filter:none;mix-blend-mode:normal;background:radial-gradient(ellipse at 77% 36%,#293e52,#142232 63%,#101b28);box-shadow:inset -17px 5px 0 -4px #d1dbd6,inset -34px 12px 30px -22px #d2e2e5,13px -5px 45px -16px #aecbd577;animation:moon-rim 16s ease-in-out infinite alternate;mask-image:linear-gradient(#000 75%,transparent 100%)}
+@keyframes moon-rim{from{box-shadow:inset -17px 5px 0 -4px #b4c4c6,inset -34px 12px 30px -22px #d2e2e5,13px -5px 45px -16px #aecbd544}to{box-shadow:inset -17px 5px 0 -4px #dce2d7,inset -34px 12px 30px -22px #e1e9db,13px -5px 60px -12px #aecbd577}}
+.mist{background:radial-gradient(ellipse at 12% 62%,#bdd2e255,transparent 30%),radial-gradient(ellipse at 45% 48%,#a4bddb44,transparent 32%),radial-gradient(ellipse at 78% 66%,#b1cbd255,transparent 35%);filter:blur(16px)}
+.mist-back{top:51%;height:24%;opacity:.64;animation:fog-cross 28s ease-in-out infinite alternate}
+.mist-front{top:72%;height:20%;opacity:.6;animation:fog-cross 35s ease-in-out infinite alternate-reverse}
+@keyframes fog-cross{from{transform:translateX(-12%) scaleY(.8)}to{transform:translateX(14%) scaleY(1.12)}}
+.motes i{width:1px!important;height:1px!important;box-shadow:0 0 3px #bed7e4}.motes i:nth-child(n+13){display:none}
+.fracture-mark{display:none}
+.accord{position:relative;isolation:isolate;overflow:hidden}
+.accord:before{content:'';position:absolute;inset:12% 0 5% 45%;z-index:-1;background:radial-gradient(ellipse at 65% 50%,#54738e20,transparent 65%);pointer-events:none}
+.alliance-mist{background:radial-gradient(ellipse at 30% 70%,#8caac647,transparent 55%),radial-gradient(ellipse at 75% 65%,#668aaa22,transparent 44%);animation:fog-cross 26s ease-in-out infinite alternate}
+.alliance-art:after{content:'';position:absolute;left:7%;right:5%;top:0;bottom:18%;border:1px solid #8daac522;border-bottom:0;border-radius:48% 48% 0 0;box-shadow:inset 12px 0 30px #6685a010;z-index:-1}
+.portrait-ring{border:1px solid #93bac36b;box-shadow:0 0 20px #7daec826,inset 0 0 24px #7daec818;animation:ring-clockwise 38s linear infinite}
+.portrait-ring:before{content:'';position:absolute;inset:-7px;border-radius:50%;border:1px dashed #a6bec53d;box-shadow:0 0 15px #8cafbc18}
+.portrait-ring:after{content:'';position:absolute;top:-3px;left:49%;width:6px;height:6px;border-radius:50%;background:#d8e5d9;box-shadow:0 0 12px #c8e1de}
+@keyframes ring-clockwise{to{transform:rotate(360deg)}}
+.portrait{background:radial-gradient(ellipse,#6a94ac16,transparent 66%)}
+.fighter-info:after{content:'';display:block;height:1px;width:65%;margin-top:35px;background:linear-gradient(90deg,#8caec266,transparent)}
+/* The edge fades are fixed to the section so parallax cannot expose a hard seam. */
+.closing{min-height:680px;padding:210px 20px 110px}
+.closing:before,.closing:after{content:'';position:absolute;left:0;right:0;pointer-events:none;z-index:1}
+.closing:before{top:0;height:38%;background:linear-gradient(#080f19 0%,#080f19ee 12%,#080f1980 48%,transparent)}
+.closing:after{bottom:0;height:28%;background:linear-gradient(transparent,#080f19)}
+.closing-atmosphere{mask-image:none;transform:none!important}
+.closing-poster,.eclipse-film{object-fit:contain;object-position:center;opacity:.64}
+.closing-haze{background:radial-gradient(ellipse at 28% 70%,#a7c2d333,transparent 38%),radial-gradient(ellipse at 76% 65%,#a7c2d32b,transparent 40%);filter:blur(16px);animation:fog-cross 24s ease-in-out infinite alternate}
+.closing> :not(.closing-atmosphere){z-index:2}
+footer{border-top:0}
+@media(max-height:560px) and (orientation:landscape){.hero-copy{top:13%}.hero-copy .tagline{margin:8px 0 12px}.hero-copy .edition{margin-bottom:5px}.hero-copy .play{min-height:50px}.closing{min-height:580px;padding-top:180px}}
+@media(max-width:1100px) and (orientation:portrait){.hero-copy{top:13%}}
+.moonlight{mask-image:linear-gradient(#000 48%,#000c 68%,transparent 94%)}
+.moonlight:after{content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(173deg,transparent 22%,#a6bfd811 23%,#a6bfd808 26%,transparent 27%,transparent 39%,#a6bfd814 40%,transparent 42%,transparent 58%,#a6bfd810 59%,transparent 62%);filter:blur(3px)}
+
+/* Restore the original painted eclipse; retain only its subtle light overlay. */
+.moonlight{left:34.5%;top:-.5%;width:39%;height:69.5%;border-radius:50%;background:radial-gradient(ellipse,transparent 57%,#d6e4de12 62%,#e0e9d84d 68%,#accde935 71%,transparent 77%);filter:blur(12px);mix-blend-mode:screen;box-shadow:none;mask-image:none;animation:eclipse-breathe 7s ease-in-out infinite alternate}
+.moonlight:after{display:none}
+/* The closing artwork fills the entire section, without side gutters. */
+.closing-poster,.eclipse-film{object-fit:cover;width:100%;height:100%;inset:0;object-position:center}
+
+/* Rendered stone wings frame the story and fighters, leaving the reading area open. */
+.accord{overflow:visible}
+.fighters{position:relative;isolation:isolate}
+.section-ruins{position:absolute;inset:0 auto 0 50%;width:100vw;transform:translateX(-50%);overflow:hidden;pointer-events:none;user-select:none;z-index:-1;mask-image:linear-gradient(transparent,#000 12%,#000 80%,transparent)}
+.ruin-side{position:absolute;top:-40px;width:clamp(360px,29vw,520px);opacity:.62;filter:saturate(.55) brightness(.8)}
+.ruin-left{left:min(-25px,calc((100vw - 1320px)/2 - 120px))}
+.ruin-right{right:min(-25px,calc((100vw - 1320px)/2 - 120px));top:60px;opacity:.52}
+.ruin-travel{width:100%;will-change:transform}
+.ruin-travel img{display:block;width:100%;height:auto}
+.fighters .ruin-side{top:120px}
+.fighters .ruin-left img,.fighters .ruin-right img{transform:scaleX(-1)}
+.fighters .ruin-right{top:5px}
+.ruin-ground-mist{position:absolute;left:-10%;right:-10%;bottom:5%;height:18%;background:radial-gradient(ellipse at 6% 60%,#7a9bb92e,transparent 32%),radial-gradient(ellipse at 94% 40%,#7a9bb926,transparent 30%);filter:blur(18px);animation:fog-cross 30s ease-in-out infinite alternate}
+@media(max-width:1100px){.ruin-side{width:340px;opacity:.37}.ruin-left{left:-200px}.ruin-right{right:-200px}.fighters .ruin-side{top:190px}}
+@media(max-width:700px){.ruin-side{width:290px;opacity:.28}.ruin-left{left:-210px}.ruin-right{right:-210px}.section-ruins{mask-image:linear-gradient(transparent,#000 15%,#000 82%,transparent)}}
+@media(prefers-reduced-motion:reduce){.ruin-travel{will-change:auto}.ruin-ground-mist{animation:none}}
+
+/* Ash and ground haze stay at the edges. */
+.ruin-dust{position:absolute;inset:10% 0 12%}
+.ruin-dust i{position:absolute;left:var(--dust-x);bottom:10%;width:2px;height:2px;background:#c6d7de;border-radius:50%;box-shadow:0 0 6px #92bdd477;opacity:0;animation:ruin-ash var(--dust-duration) var(--dust-delay) ease-in-out infinite;animation-play-state:paused}
+.ruin-ground-mist{animation-play-state:paused}
+.section-ruins.is-visible .ruin-ground-mist,.section-ruins.is-visible .ruin-dust i{animation-play-state:running}
+@keyframes ruin-ash{0%{opacity:0;transform:translate3d(-10px,30px,0)}20%{opacity:.45}80%{opacity:.2}100%{opacity:0;transform:translate3d(22px,-260px,0)}}
+.portrait{--portrait-aura:#c6b58013;background:radial-gradient(ellipse,var(--portrait-aura),transparent 67%);transition:background .8s}
+.portrait[data-shape=vesperfang]{--portrait-aura:#87badb24}
+.portrait[data-shape=hushwing]{--portrait-aura:#9fdfdc25}
+@media(max-width:1100px){.ruin-dust i{box-shadow:none}}
+
+/* The rendered animals occupy the open air above the reading area. */
+.ruin-bats{position:absolute;inset:0 0 auto;height:clamp(125px,10vw,160px);pointer-events:none}
+.bat-sky{display:block;width:100%;height:100%}
+
+.has-contact-shadows:before{display:none}
+
+/* Fine white dust and broad moving fog fill each section, behind the content. */
+.ruin-dust{inset:5% 0 5%}
+.ruin-dust i{top:var(--dust-y);bottom:auto;width:var(--dust-size);height:var(--dust-size);background:#f4f7f9;box-shadow:0 0 4px #d8e6f033;animation-name:section-dust}
+@keyframes section-dust{0%{opacity:0;transform:translate3d(-12px,28px,0)}18%{opacity:var(--dust-light)}72%{opacity:calc(var(--dust-light)*.75)}100%{opacity:0;transform:translate3d(36px,-95px,0)}}
+.section-mist{position:absolute;left:-20%;width:140%;height:30%;pointer-events:none;filter:blur(22px);background:radial-gradient(ellipse at 20% 60%,#b6cadb30,transparent 32%),radial-gradient(ellipse at 50% 38%,#c5d4df22,transparent 34%),radial-gradient(ellipse at 82% 58%,#b8cbd52a,transparent 33%);animation:section-fog 34s ease-in-out infinite alternate;animation-play-state:paused}
+.section-mist-high{top:4%;opacity:.42}
+.section-mist-middle{top:36%;height:36%;opacity:.48;animation-duration:41s;animation-direction:alternate-reverse}
+.ruin-ground-mist{left:-20%;right:-20%;height:36%;bottom:0;background:radial-gradient(ellipse at 18% 60%,#b5ccdf3b,transparent 32%),radial-gradient(ellipse at 49% 44%,#c4d5e239,transparent 34%),radial-gradient(ellipse at 82% 58%,#b1c9db37,transparent 34%);filter:blur(23px)}
+.section-ruins.is-visible .section-mist{animation-play-state:running}
+@keyframes section-fog{from{transform:translate3d(-6%,10px,0) scaleY(.9)}to{transform:translate3d(7%,-10px,0) scaleY(1.15)}}
+@media(max-width:1000px){.ruin-dust i:nth-child(3n){display:none}.section-mist{filter:blur(16px)}}

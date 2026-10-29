@@ -1,0 +1,16 @@
+/* A short illustrated sparring exchange, contained within the Accord artwork. */
+.alliance-art .alliance-knight{width:43%;right:-3%}
+.alliance-art .accord-rig{position:absolute;z-index:2;pointer-events:none;filter:drop-shadow(0 3px 2px #000b)}
+.accord-rig canvas{position:absolute;left:-30%;top:-30%;width:160%;height:160%;display:block}
+.alliance-art img[data-accord-rig="ready"]{opacity:0!important}
+.alliance-art .accord-combat-effects{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:3;pointer-events:none;opacity:0}
+.alliance-art.is-sparring .accord-combat-effects{opacity:1}
+.accord-breath{fill:url(#accord-breath-fill);opacity:0;filter:url(#accord-soften)}
+.accord-breath-thread{fill:none;stroke:#a9d9d2;stroke-width:1.1;stroke-linecap:round;opacity:0}
+.accord-contact{fill:none;stroke:#c8e8da;stroke-width:1.1;opacity:0}
+.accord-contact-ring{fill:none;stroke:#bfdcc8;stroke-width:1;opacity:0}
+.accord-sword-trail{fill:none;stroke:url(#accord-sword-light);stroke-width:3;stroke-linecap:round;opacity:0}
+.accord-counter-contact{stroke:#e3c681;stroke-width:1.1;opacity:0}
+.accord-ground-contact{fill:#03070d;opacity:.7}
+html.is-still .accord-combat-effects,html.needs-landscape .accord-combat-effects{visibility:hidden}
+@media(prefers-reduced-motion:reduce){.accord-combat-effects{visibility:hidden}}
